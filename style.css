@@ -13,7 +13,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 1000px;
     margin: 0 auto;
-    overflow-x: auto;
+    overflow-x: auto; /* 테이블이 너무 넓을 때 스크롤 가능하도록 */
 }
 
 h1 {
@@ -23,56 +23,48 @@ h1 {
 }
 
 /* 고객 정보 섹션 스타일 */
-.customer-info {
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
 .customer-info table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0;
-    min-width: unset; /* 테이블 최소 너비 해제 */
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    min-width: unset; /* 고객 정보 테이블은 최소 너비 제한 없음 */
 }
 
 .customer-info th,
 .customer-info td {
-    padding: 8px;
-    text-align: left;
     border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
     white-space: nowrap;
 }
 
 .customer-info th {
     background-color: #f2f2f2;
+    color: #555;
     font-weight: bold;
-    width: 100px; /* 라벨 너비 고정 */
+    width: 15%; /* 시공 날짜, 고객 이름, 고객 연락처 등 제목 셀 너비 */
 }
 
 .customer-info td {
-    width: auto; /* 내용에 따라 너비 조절 */
+    width: 18.33%; /* 입력 필드 셀 너비 (나머지를 균등 분배) */
 }
 
-.customer-info input[type="text"],
-.customer-info input[type="date"] {
-    width: calc(100% - 16px);
+.customer-info input[type="date"],
+.customer-info input[type="text"] {
+    width: calc(100% - 16px); /* 부모 셀에 꽉 차게 */
     padding: 6px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 4px;
     box-sizing: border-box;
-    text-align: left;
+    font-size: 0.9em;
 }
 
-.customer-info input[type="date"] {
-    width: 130px; /* 날짜 입력 필드 너비 조정 */
+.customer-info tr:last-child th,
+.customer-info tr:last-child td {
+    width: auto; /* 고객 주소 행은 자동으로 너비 조절 */
 }
-
-.customer-info .customer-address {
-    width: calc(100% - 16px);
-}
-
+/* // 고객 정보 섹션 스타일 */
 
 .action-buttons {
     text-align: right;
@@ -109,7 +101,7 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
-    min-width: 800px;
+    min-width: 800px; /* 데스크톱에서 테이블 최소 너비 유지 */
 }
 
 th, td {
@@ -117,7 +109,7 @@ th, td {
     padding: 8px;
     text-align: center;
     white-space: nowrap;
-    position: relative; /* 자동완성 제안 위치 지정을 위해 추가 */
+    position: relative;
 }
 
 th {
@@ -156,7 +148,6 @@ tfoot .total-row td {
     border-top: 2px solid #aaa;
 }
 
-/* ================================================= */
 /* 자동 완성 제안 목록 스타일 */
 .suggestions {
     position: absolute;
@@ -164,18 +155,18 @@ tfoot .total-row td {
     background-color: #fff;
     max-height: 150px;
     overflow-y: auto;
-    z-index: 100; /* 다른 요소 위에 표시되도록 */
-    width: calc(100% - 2px); /* 부모 td 너비에 맞춤, border 1px * 2 고려 */
+    z-index: 100;
+    width: calc(100% - 2px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: none; /* 기본적으로 숨김 */
-    left: 0; /* td의 왼쪽 끝에 정렬 */
-    top: 100%; /* input 바로 아래에 표시 */
+    display: none;
+    left: 0;
+    top: 100%;
 }
 
 .suggestion-item {
     padding: 8px;
     cursor: pointer;
-    text-align: left; /* 제안 텍스트는 왼쪽 정렬 */
+    text-align: left;
 }
 
 .suggestion-item:hover {
@@ -184,7 +175,7 @@ tfoot .total-row td {
 
 /* 완료 버튼 스타일 */
 .completion-button-container {
-    text-align: right;
+    text-align: center;
     margin-top: 20px;
 }
 
@@ -192,7 +183,7 @@ tfoot .total-row td {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.2em;
@@ -218,7 +209,7 @@ tfoot .total-row td {
         box-shadow: none;
         margin: 0;
         width: 100%;
-        min-width: unset;
+        min-width: unset; /* 모바일에서는 최소 너비 제한 해제 */
     }
 
     h1 {
@@ -226,41 +217,48 @@ tfoot .total-row td {
         margin-bottom: 15px;
     }
 
-    /* 고객 정보 섹션 반응형 */
-    .customer-info table,
-    .customer-info tbody,
-    .customer-info tr,
-    .customer-info th,
-    .customer-info td {
+    /* 고객 정보 테이블 반응형 */
+    .customer-info table {
         display: block;
         width: 100%;
     }
 
     .customer-info tr {
-        margin-bottom: 10px;
+        display: flex; /* 가로로 나열된 th, td를 세로로 정렬 */
+        flex-wrap: wrap; /* 내용이 길면 다음 줄로 */
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
     }
 
-    .customer-info th {
-        text-align: left;
-        padding: 5px 8px;
-        width: auto;
-    }
-
+    .customer-info th,
     .customer-info td {
-        padding: 0 8px 5px 8px;
+        border: none; /* 내부 테두리 제거 */
+        width: 50%; /* th, td를 가로로 절반씩 */
+        box-sizing: border-box;
+        padding: 5px;
+        white-space: normal; /* 텍스트 줄바꿈 허용 */
     }
 
-    .customer-info input[type="text"],
-    .customer-info input[type="date"] {
-        width: calc(100% - 16px);
+    .customer-info tr:last-child {
+        display: block; /* 고객 주소 행은 다시 블록으로 */
     }
-    .customer-info input[type="date"] {
-        width: calc(100% - 16px); /* 모바일에서는 너비 100%로 조정 */
+
+    .customer-info tr:last-child th,
+    .customer-info tr:last-child td {
+        width: 100%; /* 고객 주소는 전체 너비 사용 */
+    }
+
+    .customer-info input[type="date"],
+    .customer-info input[type="text"] {
+        width: 100%;
+        padding: 5px;
+        font-size: 0.8em;
     }
 
 
     .action-buttons {
         text-align: center;
+        margin-top: 15px; /* 버튼 위 여백 추가 */
     }
 
     .action-buttons button {
@@ -269,11 +267,11 @@ tfoot .total-row td {
         margin: 0 3px;
     }
 
-    table {
+    table { /* 견적서 상세 테이블 */
         display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        min-width: 650px;
+        overflow-x: auto; /* 가로 스크롤 가능하도록 */
+        -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+        min-width: 650px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 */
         font-size: 0.8em;
     }
 
@@ -282,15 +280,15 @@ tfoot .total-row td {
         min-width: 60px;
     }
 
-    th:nth-child(2),
+    th:nth-child(2), /* 시공위치 */
     td:nth-child(2) {
         min-width: 100px;
     }
-    th:nth-child(5),
+    th:nth-child(5), /* 금액 */
     td:nth-child(5) {
         min-width: 90px;
     }
-    th:last-child,
+    th:last-child, /* 비고 */
     td:last-child {
         min-width: 100px;
     }
@@ -312,10 +310,11 @@ tfoot .total-row td {
 
     /* 모바일 자동완성 제안 너비 조정 */
     .suggestions {
-        width: calc(100% - 2px); /* 부모 td 너비에 맞춤 */
+        width: calc(100% - 2px);
     }
 
-    .completion-button-container {
-        text-align: center;
+    #completeBtn {
+        padding: 10px 20px;
+        font-size: 1.1em;
     }
 }
