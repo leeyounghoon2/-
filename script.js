@@ -6,7 +6,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const completeBtn = document.getElementById('completeBtn');
 
     // ===========================================
+    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
+    // ===========================================
+    const customerContactInput = document.querySelector('.customer-contact');
+
+    if (customerContactInput) {
+        customerContactInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
+            let formattedValue = '';
+
+            if (value.length > 11) {
+                value = value.substring(0, 11); // 11자리 초과하면 잘라냄
+            }
+
+            if (value.length < 4) {
+                formattedValue = value;
+            } else if (value.length < 8) {
+                formattedValue = value.substring(0, 3) + '-' + value.substring(3);
+            } else {
+                formattedValue = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7);
+            }
+            e.target.value = formattedValue;
+        });
+    }
+
+    // ===========================================
     // 자동 완성 (Autocomplete) 관련 변수 및 함수
+    // (이전 코드와 동일)
     // ===========================================
     let savedLocations = new Set();
     const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
@@ -79,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 시공위치 자동 번호 매기기
+    // (이전 코드와 동일)
     // ===========================================
     function updateLocationNumbering() {
         const locationInputs = quotationBody.querySelectorAll('.location-input');
@@ -125,39 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 각 행에 대한 기능 설정 (최종금액 계산, 이벤트 리스너 등)
+    // (이전 코드와 동일)
     // ===========================================
     function setupRow(row) {
         const checkItem = row.querySelector('.check-item');
         const locationInput = row.querySelector('.location-input');
         const widthInput = row.querySelector('.width-input');
         const heightInput = row.querySelector('.height-input');
-        // const amountCell = row.querySelector('.amount-cell'); // 금액 셀 제거
         const optionCheckbox = row.querySelector('.option-checkbox');
         const finalAmountCell = row.querySelector('.final-amount-cell');
 
-        // 해당 행의 최종 금액을 업데이트하는 함수
         function updateFinalAmount() {
             let baseAmount = 0;
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
 
-            // 체크박스가 체크되어 있고, 가로 또는 세로 값이 있을 때만 기본 금액 계산
             if (checkItem.checked && (width > 0 || height > 0)) {
                 baseAmount = Math.max(width, height) / 1000 * 25000;
             } else {
-                baseAmount = 0; // 체크 해제되거나 값 없으면 0
+                baseAmount = 0;
             }
 
             let finalAmount = baseAmount;
             if (optionCheckbox.checked) {
-                finalAmount += 15000; // 추가 옵션 선택 시 15000원 추가
+                finalAmount += 15000;
             }
             finalAmountCell.textContent = finalAmount.toLocaleString('ko-KR') + '원';
 
             updateTotalSum();
         }
-
-        // --- 이벤트 리스너 설정 ---
 
         locationInput.addEventListener('input', function() {
             if (this.value.trim() !== '') {
@@ -167,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkItem.checked = false;
                 hideSuggestions(this);
             }
-            // locationInput의 변경은 updateLocationNumbering에서 최종 금액 업데이트를 트리거함
         });
 
         locationInput.addEventListener('focus', function() {
@@ -182,11 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateLocationNumbering();
             } else {
                 checkItem.checked = false;
-                updateFinalAmount(); // 값이 없으면 최종 금액도 0으로
+                updateFinalAmount();
             }
         });
 
-        // '체크' 박스, '가로', '세로', '추가옵션' 변경 시 최종금액 업데이트
         checkItem.addEventListener('change', updateFinalAmount);
         widthInput.addEventListener('input', updateFinalAmount);
         heightInput.addEventListener('input', updateFinalAmount);
@@ -195,12 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (locationInput.value.trim() !== '') {
             checkItem.checked = true;
         }
-        // 초기 로드 시 금액 업데이트를 위해 호출
         updateFinalAmount();
     }
 
     // ===========================================
     // 총 합계 계산 및 업데이트 함수
+    // (이전 코드와 동일)
     // ===========================================
     function updateTotalSum() {
         let totalSum = 0;
@@ -217,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 행 추가/제거 기능
+    // (이전 코드와 동일)
     // ===========================================
     addRowBtn.addEventListener('click', function() {
         const newRow = document.createElement('tr');
@@ -226,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const td2 = document.createElement('td'); const input2 = document.createElement('input'); input2.type = 'text'; input2.className = 'location-input'; td2.appendChild(input2); newRow.appendChild(td2);
         const td3 = document.createElement('td'); const input3 = document.createElement('input'); input3.type = 'number'; input3.className = 'width-input'; input3.step = '100'; td3.appendChild(input3); newRow.appendChild(td3);
         const td4 = document.createElement('td'); const input4 = document.createElement('input'); input4.type = 'number'; input4.className = 'height-input'; input4.step = '100'; td4.appendChild(input4); newRow.appendChild(td4);
-        // const td5 = document.createElement('td'); td5.className = 'amount-cell'; td5.textContent = ''; newRow.appendChild(td5); // 금액 셀 제거
         const td6 = document.createElement('td'); const input6 = document.createElement('input'); input6.type = 'checkbox'; input6.className = 'option-checkbox'; td6.appendChild(input6); newRow.appendChild(td6);
         const td7 = document.createElement('td'); td7.className = 'final-amount-cell'; td7.textContent = ''; newRow.appendChild(td7);
         const td8 = document.createElement('td'); const input8 = document.createElement('input'); input8.type = 'text'; input8.className = 'remarks-input'; td8.appendChild(input8); newRow.appendChild(td8);
@@ -270,36 +291,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 완료 버튼 (JPG 저장) 기능 강화
+    // (이전 코드와 동일)
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
-        const originalOverflowX = quotationContainer.style.overflowX; // 원래 overflow-x 상태 저장
+        const originalOverflowX = quotationContainer.style.overflowX;
 
-        // 캡처 전에 임시 스타일 적용
         document.body.classList.add('capture-mode');
 
-        // 고객 정보 입력 필드의 placeholder 텍스트를 실제 입력된 텍스트로 대체하여 이미지에 포함되도록 함
         const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
         customerInputs.forEach(input => {
             if (input.value.trim() === '') {
-                // placeholder가 있고, input 값이 비어있다면 placeholder를 숨김
-                // 또는 input에 placeholder 대신 빈 문자열을 넣어 이미지에 깔끔하게 나오도록 함
-                input.setAttribute('data-placeholder-text', input.placeholder || ''); // 기존 placeholder 저장
-                input.placeholder = ''; // placeholder 숨김
+                input.setAttribute('data-placeholder-text', input.placeholder || '');
+                input.placeholder = '';
             }
         });
 
-        // 캡처 직전에 테이블의 가로 스크롤바를 숨겨 전체 내용을 캡처하도록 함
         quotationContainer.style.overflowX = 'visible';
 
-        // html2canvas를 사용하여 .quotation-container 전체를 이미지로 캡처
         html2canvas(quotationContainer, {
-            scale: 2, // 2배 스케일로 고해상도 캡처
-            scrollY: -window.scrollY, // 현재 스크롤 위치 보정
+            scale: 2,
+            scrollY: -window.scrollY,
             useCORS: true,
             logging: true,
-            allowTaint: true, // 이미지 로딩 문제 발생 시 시도 (보안 경고 발생 가능)
-            backgroundColor: '#ffffff' // 배경색을 흰색으로 지정 (투명 영역 방지)
+            allowTaint: true,
+            backgroundColor: '#ffffff'
         }).then(canvas => {
             const image = canvas.toDataURL('image/jpeg', 0.9);
 
@@ -324,9 +340,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('이미지 저장 중 오류 발생:', error);
             alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
         }).finally(() => {
-            // 캡처 후 원상 복구
             document.body.classList.remove('capture-mode');
-            quotationContainer.style.overflowX = originalOverflowX; // 원래 overflow-x 상태 복구
+            quotationContainer.style.overflowX = originalOverflowX;
 
             customerInputs.forEach(input => {
                 const originalPlaceholder = input.getAttribute('data-placeholder-text');
@@ -338,9 +353,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-
     // ===========================================
     // 초기 설정 (페이지 로드 시)
+    // (이전 코드와 동일)
     // ===========================================
     loadSavedLocations();
 
