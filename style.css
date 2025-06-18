@@ -111,6 +111,7 @@ th, td {
     position: relative;
 }
 /* 기본적으로 td, th는 줄바꿈 허용. 특정 input 내부의 텍스트는 input 넓이 따라감 */
+/* 단, 고객 정보 테이블의 th, td는 white-space: nowrap; 유지 */
 
 th {
     background-color: #f2f2f2;
@@ -296,7 +297,7 @@ tfoot .total-row td {
         display: block;
         overflow-x: auto; /* 가로 스크롤 가능하도록 */
         -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
-        min-width: 600px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 */
+        min-width: 600px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 (컬럼 제거로 폭 감소) */
         font-size: 0.8em;
     }
 
