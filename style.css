@@ -36,7 +36,7 @@ h1 {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-    white-space: nowrap;
+    white-space: nowrap; /* 고객 정보 테이블의 제목/내용은 줄바꿈 안함 */
 }
 
 .customer-info th {
@@ -108,15 +108,39 @@ th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-    white-space: nowrap;
     position: relative;
 }
+/* 기본적으로 td, th는 줄바꿈 허용. 특정 input 내부의 텍스트는 input 넓이 따라감 */
 
 th {
     background-color: #f2f2f2;
     color: #555;
     font-weight: bold;
+    white-space: nowrap; /* 제목은 줄바꿈 안함 */
 }
+
+/* 개별 열 너비 조정 (데스크톱) */
+th:nth-child(2), /* 시공위치 */
+td:nth-child(2) {
+    width: 20%; /* 기존보다 줄임 */
+    min-width: 150px;
+}
+th:nth-child(3), /* 사이즈(가로) */
+td:nth-child(3) {
+    width: 10%; /* 기존보다 줄임 */
+    min-width: 80px;
+}
+th:nth-child(4), /* 사이즈(세로) */
+td:nth-child(4) {
+    width: 10%; /* 기존보다 줄임 */
+    min-width: 80px;
+}
+th:nth-child(6), /* 최종금액 */
+td:nth-child(6) {
+    width: 18%; /* 크기 늘림 */
+    min-width: 130px;
+}
+
 
 input[type="text"],
 input[type="number"] {
@@ -126,6 +150,7 @@ input[type="number"] {
     border-radius: 4px;
     box-sizing: border-box;
     text-align: center;
+    white-space: normal; /* input 내부 텍스트는 줄바꿈 가능 */
 }
 
 input.remarks-input {
@@ -271,27 +296,32 @@ tfoot .total-row td {
         display: block;
         overflow-x: auto; /* 가로 스크롤 가능하도록 */
         -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
-        min-width: 650px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 */
+        min-width: 600px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 */
         font-size: 0.8em;
     }
 
-    th, td {
-        padding: 5px 3px;
-        min-width: 60px;
-    }
-
+    /* 모바일에서 개별 열 너비 조정 */
     th:nth-child(2), /* 시공위치 */
     td:nth-child(2) {
-        min-width: 100px;
+        min-width: 90px; /* 데스크톱 150px -> 모바일 90px */
+        width: 15%;
     }
-    th:nth-child(5), /* 금액 */
-    td:nth-child(5) {
-        min-width: 90px;
+    th:nth-child(3), /* 사이즈(가로) */
+    td:nth-child(3) {
+        min-width: 60px; /* 데스크톱 80px -> 모바일 60px */
+        width: 10%;
     }
-    th:last-child, /* 비고 */
-    td:last-child {
-        min-width: 100px;
+    th:nth-child(4), /* 사이즈(세로) */
+    td:nth-child(4) {
+        min-width: 60px; /* 데스크톱 80px -> 모바일 60px */
+        width: 10%;
     }
+    th:nth-child(6), /* 최종금액 */
+    td:nth-child(6) {
+        min-width: 120px; /* 데스크톱 130px -> 모바일 120px (최대한 넓게) */
+        width: 20%;
+    }
+
 
     input[type="text"],
     input[type="number"] {
@@ -310,11 +340,61 @@ tfoot .total-row td {
 
     /* 모바일 자동완성 제안 너비 조정 */
     .suggestions {
-        width: calc(100% - 2px);
+        width: calc(100% - 2px); /* 부모 td 너비에 맞춤 */
     }
 
     #completeBtn {
         padding: 10px 20px;
         font-size: 1.1em;
     }
+}
+
+/* ================================================= */
+/* 이미지 저장 시 임시 스타일 (잘림 방지) */
+/* 이 클래스는 html2canvas 캡처 시점에 script.js에서 동적으로 추가됩니다. */
+.capture-mode .quotation-container {
+    padding: 20px; /* 원본 패딩 유지 */
+    margin: 0; /* 중앙 정렬 해제 */
+    max-width: unset; /* 최대 너비 제한 해제 */
+    width: 100%; /* 전체 너비 사용 */
+    overflow-x: hidden !important; /* 가로 스크롤 숨김 (캡처 시) */
+}
+
+.capture-mode table {
+    min-width: 900px; /* 캡처 시 강제로 충분한 너비 확보 */
+    font-size: 1em; /* 캡처 시 폰트 크기 원복 */
+}
+
+.capture-mode th,
+.capture-mode td {
+    white-space: normal; /* 캡처 시 줄바꿈 허용 */
+    word-break: break-all; /* 긴 단어 강제 줄바꿈 */
+}
+.capture-mode input[type="text"],
+.capture-mode input[type="number"] {
+    width: 95%; /* 캡처 시 input 너비 조금 늘림 */
+    padding: 6px;
+}
+.capture-mode input.remarks-input {
+    width: 95%;
+    min-width: unset;
+}
+.capture-mode .customer-info th,
+.capture-mode .customer-info td {
+    width: auto; /* 고객 정보 셀 너비 자동 조절 */
+    white-space: normal;
+}
+.capture-mode .customer-info tr {
+    display: table-row; /* flex를 table-row로 원복 */
+    border: none;
+    margin-bottom: 0;
+}
+.capture-mode .customer-info th,
+.capture-mode .customer-info td {
+    display: table-cell; /* flex를 table-cell로 원복 */
+    width: auto;
+}
+.capture-mode .action-buttons,
+.capture-mode .completion-button-container {
+    display: none !important; /* 캡처 시 버튼 완전히 숨김 */
 }
