@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addRowBtn = document.getElementById('addRowBtn');
     const removeRowBtn = document.getElementById('removeRowBtn');
     const totalFinalAmountCell = document.getElementById('totalFinalAmount');
-    const completeBtn = document.getElementById('completeBtn'); // 완료 버튼
+    const completeBtn = document.getElementById('completeBtn'); // 완료 버튼 요소 추가
 
     // ===========================================
     // 자동 완성 (Autocomplete) 관련 변수 및 함수
@@ -304,33 +304,85 @@ document.addEventListener('DOMContentLoaded', function() {
     // 완료 버튼 (JPG 저장) 기능
     // ===========================================
     completeBtn.addEventListener('click', function() {
-        const quotationContainer = document.querySelector('.quotation-container');
+        // 완료 버튼 및 행 추가/제거 버튼을 일시적으로 숨김
+        completeBtn.style.display = 'none';
+        addRowBtn.style.display = 'none';
+        removeRowBtn.style.display = 'none';
 
-        // html2canvas를 사용하여 .quotation-container 요소를 캡처
-        html2canvas(quotationContainer, {
-            scale: 2, // 고해상도 이미지 생성을 위해 스케일 조정 (선택 사항)
-            logging: false, // 콘솔 로그 비활성화
-            useCORS: true // CORS 문제 발생 시
-        }).then(function(canvas) {
-            // 캡처된 캔버스를 이미지 데이터 URL로 변환
-            const imageDataURL = canvas.toDataURL('image/jpeg', 0.9); // JPEG 형식, 품질 0.9
+        // 고객 정보 입력 필드의 placeholder 텍스트를 실제 입력된 텍스트로 대체하여 이미지에 포함되도록 함
+        const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
+        customerInputs.forEach(input => {
+            if (input.value.trim() === '') {
+                // placeholder가 있고, input 값이 비어있다면 placeholder를 숨김
+                // 또는 input에 placeholder 대신 빈 문자열을 넣어 이미지에 깔끔하게 나오도록 함
+                input.setAttribute('data-placeholder-text', input.placeholder || ''); // 기존 placeholder 저장
+                input.placeholder = ''; // placeholder 숨김
+            }
+        });
 
-            // 파일 이름 생성 (예: quotation_2023-10-27.jpg)
-            const date = new Date();
-            const filename = `견적서_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.jpg`;
 
-            // 다운로드 링크 생성
-            const a = document.createElement('a');
-            a.href = imageDataURL;
-            a.download = filename; // 다운로드될 파일 이름 설정
+        // html2canvas를 사용하여 .quotation-container 전체를 이미지로 캡처
+        // scale: 모바일에서 고해상도 이미지를 위해 높은 스케일 적용 (2배 또는 3배)
+        // useCORS: 외부 이미지 사용 시 필요 (지금은 사용 안 함)
+        // scrollY: 스크롤 위치를 0으로 설정하여 상단부터 캡처
+        html2canvas(document.querySelector('.quotation-container'), {
+            scale: 2, // 2배 스케일로 고해상도 캡처
+            scrollY: -window.scrollY, // 현재 스크롤 위치 보정
+            useCORS: true,
+            logging: true // 디버깅을 위해 로깅 활성화
+        }).then(canvas => {
+            // 캡처된 캔버스를 이미지 URL로 변환
+            const image = canvas.toDataURL('image/jpeg', 0.9); // JPEG 형식, 품질 0.9
 
-            // 링크를 클릭하여 다운로드 시작
-            document.body.appendChild(a); // 일부 브라우저에서 필요
-            a.click();
-            document.body.removeChild(a); // 사용 후 제거
-        }).catch(function(error) {
+            // 이미지 다운로드를 위한 링크 생성
+            const link = document.createElement('a');
+            link.href = image;
+
+            // 파일 이름 생성 (예: 견적서_20231027_1430.jpg)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const filename = `견적서_${year}${month}${day}_${hours}${minutes}.jpg`;
+            link.download = filename;
+
+            // 링크를 클릭하여 이미지 다운로드 시작
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 숨겼던 버튼들을 다시 표시
+            completeBtn.style.display = 'block';
+            addRowBtn.style.display = 'block';
+            removeRowBtn.style.display = 'block';
+
+            // placeholder 텍스트를 원상 복구
+            customerInputs.forEach(input => {
+                const originalPlaceholder = input.getAttribute('data-placeholder-text');
+                if (originalPlaceholder !== null) {
+                    input.placeholder = originalPlaceholder;
+                    input.removeAttribute('data-placeholder-text');
+                }
+            });
+
+            alert('견적서가 JPG 이미지로 저장되었습니다!');
+        }).catch(error => {
             console.error('이미지 저장 중 오류 발생:', error);
-            alert('견적서 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+            alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
+
+            // 오류 발생 시에도 버튼 다시 표시 및 placeholder 복구
+            completeBtn.style.display = 'block';
+            addRowBtn.style.display = 'block';
+            removeRowBtn.style.display = 'block';
+            customerInputs.forEach(input => {
+                const originalPlaceholder = input.getAttribute('data-placeholder-text');
+                if (originalPlaceholder !== null) {
+                    input.placeholder = originalPlaceholder;
+                    input.removeAttribute('data-placeholder-text');
+                }
+            });
         });
     });
 
