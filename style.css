@@ -123,23 +123,33 @@ th {
 /* 개별 열 너비 조정 (데스크톱) */
 th:nth-child(2), /* 시공위치 */
 td:nth-child(2) {
-    width: 20%; /* 기존보다 줄임 */
-    min-width: 150px;
+    width: 16%; /* 기존보다 더 줄임 */
+    min-width: 120px;
 }
 th:nth-child(3), /* 사이즈(가로) */
 td:nth-child(3) {
-    width: 10%; /* 기존보다 줄임 */
+    width: 10%;
     min-width: 80px;
 }
 th:nth-child(4), /* 사이즈(세로) */
 td:nth-child(4) {
-    width: 10%; /* 기존보다 줄임 */
+    width: 10%;
     min-width: 80px;
+}
+th:nth-child(5), /* 추가옵션 */
+td:nth-child(5) {
+    width: 8%; /* 많이 줄임 */
+    min-width: 60px;
 }
 th:nth-child(6), /* 최종금액 */
 td:nth-child(6) {
+    width: 12%; /* 10,000원 정도 들어갈 사이즈로 조정 */
+    min-width: 100px;
+}
+th:nth-child(7), /* 비고 */
+td:nth-child(7) {
     width: 18%; /* 크기 늘림 */
-    min-width: 130px;
+    min-width: 140px;
 }
 
 
@@ -173,6 +183,13 @@ tfoot .total-row {
 tfoot .total-row td {
     border-top: 2px solid #aaa;
 }
+
+/* 총 합계 셀 너비 조정 */
+#totalFinalAmount {
+    width: 12%; /* 최종금액과 동일하게 설정하여 1,000,000원 정도 들어갈 공간 확보 */
+    min-width: 120px; /* 1,000,000원 이상 들어갈 수 있도록 최소 너비 확보 */
+}
+
 
 /* 자동 완성 제안 목록 스타일 */
 .suggestions {
@@ -265,26 +282,28 @@ tfoot .total-row td {
         white-space: normal; /* 텍스트 줄바꿈 허용 */
     }
 
-    .customer-info tr:last-child {
-        display: block; /* 고객 주소 행은 다시 블록으로 */
+    .customer-info th:first-child, /* 시공 날짜, 고객 주소 제목 */
+    .customer-info td:nth-child(odd) { /* 고객 이름, 고객 연락처 제목 */
+        width: 35%; /* 제목 열 너비 조정 */
+        text-align: left;
     }
 
-    .customer-info tr:last-child th,
-    .customer-info tr:last-child td {
-        width: 100%; /* 고객 주소는 전체 너비 사용 */
+    .customer-info td:nth-child(even), /* 시공 날짜, 고객 이름, 고객 연락처 입력칸 */
+    .customer-info tr:last-child td { /* 고객 주소 입력칸 */
+        width: 65%; /* 내용 열 너비 조정 */
+        text-align: left;
     }
 
     .customer-info input[type="date"],
     .customer-info input[type="text"] {
-        width: 100%;
+        width: calc(100% - 10px); /* 패딩 고려 */
+        font-size: 0.85em;
         padding: 5px;
-        font-size: 0.8em;
     }
 
 
     .action-buttons {
         text-align: center;
-        margin-top: 15px; /* 버튼 위 여백 추가 */
     }
 
     .action-buttons button {
@@ -293,34 +312,48 @@ tfoot .total-row td {
         margin: 0 3px;
     }
 
-    table { /* 견적서 상세 테이블 */
+    table {
         display: block;
-        overflow-x: auto; /* 가로 스크롤 가능하도록 */
-        -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
-        min-width: 600px; /* 모바일에서도 최소 너비 유지하여 찌그러지지 않도록 (컬럼 제거로 폭 감소) */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 650px; /* 모든 열이 스크롤 없이 보이도록 최소 너비 설정 */
         font-size: 0.8em;
     }
 
-    /* 모바일에서 개별 열 너비 조정 */
+    th, td {
+        padding: 5px 3px;
+        min-width: 60px; /* 기본 최소 너비 */
+        white-space: nowrap; /* 모바일에서도 테이블 내용은 줄바꿈 안함 */
+    }
+
+    /* 모바일에서 각 열 너비 조정 */
+    th:nth-child(1), /* 체크 */
+    td:nth-child(1) {
+        min-width: 40px;
+    }
     th:nth-child(2), /* 시공위치 */
     td:nth-child(2) {
-        min-width: 90px; /* 데스크톱 150px -> 모바일 90px */
-        width: 15%;
+        min-width: 100px; /* PC에서 줄인 만큼 모바일에서도 조정 */
     }
     th:nth-child(3), /* 사이즈(가로) */
     td:nth-child(3) {
-        min-width: 60px; /* 데스크톱 80px -> 모바일 60px */
-        width: 10%;
+        min-width: 80px;
     }
     th:nth-child(4), /* 사이즈(세로) */
     td:nth-child(4) {
-        min-width: 60px; /* 데스크톱 80px -> 모바일 60px */
-        width: 10%;
+        min-width: 80px;
+    }
+    th:nth-child(5), /* 추가옵션 */
+    td:nth-child(5) {
+        min-width: 50px; /* PC에서 줄인 만큼 모바일에서도 조정 */
     }
     th:nth-child(6), /* 최종금액 */
     td:nth-child(6) {
-        min-width: 120px; /* 데스크톱 130px -> 모바일 120px (최대한 넓게) */
-        width: 20%;
+        min-width: 100px; /* 10,000원 정도 들어갈 사이즈로 조정 */
+    }
+    th:nth-child(7), /* 비고 */
+    td:nth-child(7) {
+        min-width: 120px; /* PC에서 늘린 만큼 모바일에서도 조정 */
     }
 
 
@@ -344,58 +377,13 @@ tfoot .total-row td {
         width: calc(100% - 2px); /* 부모 td 너비에 맞춤 */
     }
 
-    #completeBtn {
+    .completion-button-container #completeBtn {
         padding: 10px 20px;
         font-size: 1.1em;
     }
-}
 
-/* ================================================= */
-/* 이미지 저장 시 임시 스타일 (잘림 방지) */
-/* 이 클래스는 html2canvas 캡처 시점에 script.js에서 동적으로 추가됩니다. */
-.capture-mode .quotation-container {
-    padding: 20px; /* 원본 패딩 유지 */
-    margin: 0; /* 중앙 정렬 해제 */
-    max-width: unset; /* 최대 너비 제한 해제 */
-    width: 100%; /* 전체 너비 사용 */
-    overflow-x: hidden !important; /* 가로 스크롤 숨김 (캡처 시) */
-}
-
-.capture-mode table {
-    min-width: 900px; /* 캡처 시 강제로 충분한 너비 확보 */
-    font-size: 1em; /* 캡처 시 폰트 크기 원복 */
-}
-
-.capture-mode th,
-.capture-mode td {
-    white-space: normal; /* 캡처 시 줄바꿈 허용 */
-    word-break: break-all; /* 긴 단어 강제 줄바꿈 */
-}
-.capture-mode input[type="text"],
-.capture-mode input[type="number"] {
-    width: 95%; /* 캡처 시 input 너비 조금 늘림 */
-    padding: 6px;
-}
-.capture-mode input.remarks-input {
-    width: 95%;
-    min-width: unset;
-}
-.capture-mode .customer-info th,
-.capture-mode .customer-info td {
-    width: auto; /* 고객 정보 셀 너비 자동 조절 */
-    white-space: normal;
-}
-.capture-mode .customer-info tr {
-    display: table-row; /* flex를 table-row로 원복 */
-    border: none;
-    margin-bottom: 0;
-}
-.capture-mode .customer-info th,
-.capture-mode .customer-info td {
-    display: table-cell; /* flex를 table-cell로 원복 */
-    width: auto;
-}
-.capture-mode .action-buttons,
-.capture-mode .completion-button-container {
-    display: none !important; /* 캡처 시 버튼 완전히 숨김 */
+    /* JPG 저장 시 input placeholder 숨기기 */
+    body.capture-mode input::placeholder {
+        color: transparent;
+    }
 }
