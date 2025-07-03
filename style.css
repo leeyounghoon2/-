@@ -136,18 +136,23 @@ td:nth-child(4) {
     width: 10%;
     min-width: 80px;
 }
-th:nth-child(5), /* 추가옵션 */
+th:nth-child(5), /* 금액 */
 td:nth-child(5) {
+    width: 12%; /* 금액 칸 너비 조정 */
+    min-width: 90px;
+}
+th:nth-child(6), /* 추가옵션 */
+td:nth-child(6) {
     width: 8%; /* 많이 줄임 */
     min-width: 60px;
 }
-th:nth-child(6), /* 최종금액 */
-td:nth-child(6) {
+th:nth-child(7), /* 최종금액 */
+td:nth-child(7) {
     width: 12%; /* 10,000원 정도 들어갈 사이즈로 조정 */
     min-width: 100px;
 }
-th:nth-child(7), /* 비고 */
-td:nth-child(7) {
+th:nth-child(8), /* 비고 */
+td:nth-child(8) {
     width: 18%; /* 크기 늘림 */
     min-width: 140px;
 }
@@ -186,7 +191,8 @@ tfoot .total-row td {
 
 /* 총 합계 셀 너비 조정 */
 #totalFinalAmount {
-    width: 12%; /* 최종금액과 동일하게 설정하여 1,000,000원 정도 들어갈 공간 확보 */
+    /* 기존 최종금액과 동일하게 설정하여 1,000,000원 정도 들어갈 공간 확보 */
+    /* width: 12%; (js에서 직접 설정하는 것이 아님) */
     min-width: 120px; /* 1,000,000원 이상 들어갈 수 있도록 최소 너비 확보 */
 }
 
@@ -343,16 +349,20 @@ tfoot .total-row td {
     td:nth-child(4) {
         min-width: 80px;
     }
-    th:nth-child(5), /* 추가옵션 */
+    th:nth-child(5), /* 금액 */
     td:nth-child(5) {
+        min-width: 90px;
+    }
+    th:nth-child(6), /* 추가옵션 */
+    td:nth-child(6) {
         min-width: 50px; /* PC에서 줄인 만큼 모바일에서도 조정 */
     }
-    th:nth-child(6), /* 최종금액 */
-    td:nth-child(6) {
+    th:nth-child(7), /* 최종금액 */
+    td:nth-child(7) {
         min-width: 100px; /* 10,000원 정도 들어갈 사이즈로 조정 */
     }
-    th:nth-child(7), /* 비고 */
-    td:nth-child(7) {
+    th:nth-child(8), /* 비고 */
+    td:nth-child(8) {
         min-width: 120px; /* PC에서 늘린 만큼 모바일에서도 조정 */
     }
 
