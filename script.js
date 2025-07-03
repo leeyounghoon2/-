@@ -162,32 +162,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const amountInput = row.querySelector('.amount-input');
         const finalAmountInput = row.querySelector('.final-amount-input');
 
-        let calculatedAmount = 0;
-        const baseUnitPrice = 25; // 기본 단가 25원
-        const minPrice = 25000; // 최소 금액 25,000원
+        const basePricePerSqCm = 0.025; // 10x10=100cm2 당 25원 (0.25원/cm2) -> 0.0025원/mm2
+        // 또는 1000x1000 = 1,000,000mm2 = 1m2 -> 25,000원
+        // 단가: 25,000원 / 1,000,000 = 0.025원/mm2
 
-        if (width > 0 || height > 0) {
-            const maxLength = Math.max(width, height); // 가로, 세로 중 긴 값
-            const minLength = Math.min(width, height); // 가로, 세로 중 짧은 값
+        let calculatedAmount = Math.round((width * height) * basePricePerSqCm); // 소수점 반올림
 
-            // 기본 계산: 긴 길이 * 기본 단가
-            calculatedAmount = maxLength * baseUnitPrice;
-
-            // 짧은 길이에 따른 가중치 적용 (짧은 길이가 1000 이상일 경우 1000mm 당 1.0 가중치)
-            if (minLength > 0) {
-                const weight = minLength / 1000; // 1000mm 당 1.0 가중치
-                calculatedAmount = Math.round(calculatedAmount * weight); // 반올림
-            }
-
-            // 최소 금액 25,000원 적용
-            if (calculatedAmount < minPrice && (width > 0 || height > 0)) {
-                calculatedAmount = minPrice;
-            } else if (width === 0 && height === 0) { // 가로, 세로 둘 다 0이면 금액도 0
-                calculatedAmount = 0;
-            }
-
-        } else {
-            // 가로, 세로 둘 다 0이면 금액도 0
+        // 10000원 미만이면 10000원으로 고정 (최소 금액 10000원)
+        if (calculatedAmount < 10000 && (width > 0 || height > 0)) {
+            calculatedAmount = 10000;
+        } else if (width === 0 && height === 0) { // 가로세로 0이면 금액도 0
             calculatedAmount = 0;
         }
 
@@ -196,8 +180,8 @@ document.addEventListener('DOMContentLoaded', function() {
             finalAmount += 5000; // 추가 옵션 5000원 추가
         }
 
-        amountInput.value = finalAmount.toLocaleString() + '원'; // amountInput에 최종 금액을 표시
-        finalAmountInput.value = finalAmount.toLocaleString() + '원'; // 최종 금액 표시 (동일)
+        amountInput.value = calculatedAmount.toLocaleString() + '원';
+        finalAmountInput.value = finalAmount.toLocaleString() + '원';
         updateTotal(); // 각 행의 최종 금액 변경 시 총 합계 업데이트
     }
 
