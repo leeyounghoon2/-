@@ -8,13 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const quotationContainer = document.querySelector('.quotation-container');
     const customerContactInput = document.getElementById('customerContact');
 
-    // 시공위치 자동 완성 데이터 (예시)
-    const locations = [
-        "안방", "작은방1", "작은방2", "거실", "주방", "베란다", "현관", "화장실"
-    ];
+    // 시공위치 자동 완성 데이터 (예시) - 이제 로컬 스토리지에서 동적으로 관리됨
+    // let uniqueLocations = new Set(JSON.parse(localStorage.getItem('savedLocations') || '[]'));
+    // 시공위치 자동완성 제안을 위한 Set (번호 없는 순수 이름만 저장)
+    let savedBaseLocations = new Set(JSON.parse(localStorage.getItem('savedBaseLocations') || '[]'));
 
-    // 로컬 스토리지에서 시공위치 데이터 로드 (고유한 값만)
-    let uniqueLocations = new Set(JSON.parse(localStorage.getItem('savedLocations') || '[]'));
 
     // 오늘 날짜 기본 설정
     document.getElementById('quotationDate').valueAsDate = new Date();
@@ -60,7 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // 행 추가 함수
-    function addRow(locationValue = '', widthValue = '1000', heightValue = '1000', amountValue = '25,000', finalAmountValue = '25,000', optionChecked = false, remarksValue = '') {
+    // 기본값을 모두 빈 문자열로 변경
+    function addRow(locationValue = '', widthValue = '', heightValue = '', amountValue = '', finalAmountValue = '', optionChecked = false, remarksValue = '') {
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
             <td><input type="checkbox" class="row-checkbox"></td>
@@ -89,29 +88,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const finalAmountInput = row.querySelector('.final-amount-input');
         const locationInput = row.querySelector('.location-input');
         const suggestionsDiv = row.querySelector('.suggestions');
+        const rowCheckbox = row.querySelector('.row-checkbox'); // 해당 행의 체크박스
 
         // 가로, 세로, 옵션 변경 시 최종 금액 및 총 합계 업데이트
-        [widthInput, heightInput, optionCheckbox].forEach(input => {
+        [widthInput, heightInput].forEach(input => {
             input.addEventListener('input', () => calculateAmounts(row));
-            if (input.type === 'checkbox') {
-                input.addEventListener('change', () => calculateAmounts(row));
-            }
         });
+        optionCheckbox.addEventListener('change', () => calculateAmounts(row));
 
-        // 초기 계산
-        calculateAmounts(row);
 
-        // 시공위치 자동 완성 로직
+        // 시공위치 입력 시 체크박스 자동 선택/해제 및 자동 완성 로직
         locationInput.addEventListener('input', function() {
-            const inputVal = this.value.toLowerCase();
+            const inputVal = this.value.trim();
             suggestionsDiv.innerHTML = '';
+
+            // 시공위치 입력 시 체크박스 자동 선택/해제
+            if (inputVal.length > 0) {
+                rowCheckbox.checked = true;
+            } else {
+                rowCheckbox.checked = false;
+            }
+            updateSelectAllCheckbox(); // 전체 선택 체크박스 상태 업데이트
+
             if (inputVal.length === 0) {
                 suggestionsDiv.style.display = 'none';
                 return;
             }
 
-            const filteredSuggestions = Array.from(uniqueLocations).filter(loc =>
-                loc.toLowerCase().includes(inputVal)
+            // 자동 완성 제안 (번호 없는 순수 이름 기반)
+            const filteredSuggestions = Array.from(savedBaseLocations).filter(loc =>
+                loc.toLowerCase().includes(inputVal.toLowerCase())
             ).slice(0, 5); // 최대 5개만 표시
 
             if (filteredSuggestions.length > 0) {
@@ -120,13 +126,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     item.classList.add('suggestion-item');
                     item.textContent = loc;
                     item.addEventListener('click', () => {
-                        locationInput.value = loc;
+                        locationInput.value = loc; // 기본 제안 클릭 시 번호 없이 적용
                         suggestionsDiv.style.display = 'none';
                         // 새 위치가 입력되면 Set에 추가하여 저장
-                        if (loc.trim() !== '' && !uniqueLocations.has(loc.trim())) {
-                            uniqueLocations.add(loc.trim());
-                            localStorage.setItem('savedLocations', JSON.stringify(Array.from(uniqueLocations)));
+                        if (loc.trim() !== '' && !savedBaseLocations.has(loc.trim())) {
+                            savedBaseLocations.add(loc.trim());
+                            localStorage.setItem('savedBaseLocations', JSON.stringify(Array.from(savedBaseLocations)));
                         }
+                        // 클릭 시에도 체크박스 상태 업데이트 (이미 input 이벤트에서 처리되지만 안전장치)
+                        rowCheckbox.checked = true;
+                        updateSelectAllCheckbox();
                     });
                     suggestionsDiv.appendChild(item);
                 });
@@ -136,19 +145,71 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // 입력 필드에서 포커스 잃으면 자동 완성 닫기
+        // 입력 필드에서 포커스 잃으면 자동 완성 닫기 및 번호 자동 부여
         locationInput.addEventListener('blur', function() {
-            // blur 이벤트가 suggestion-item 클릭보다 먼저 발생할 수 있으므로, 지연 시간을 줌
             setTimeout(() => {
                 suggestionsDiv.style.display = 'none';
-                // 새 위치가 입력되면 Set에 추가하여 저장 (blur 시점에도 저장)
-                const locValue = locationInput.value.trim();
-                if (locValue !== '' && !uniqueLocations.has(locValue)) {
-                    uniqueLocations.add(locValue);
-                    localStorage.setItem('savedLocations', JSON.stringify(Array.from(uniqueLocations)));
+                let locValue = locationInput.value.trim();
+
+                if (locValue !== '') {
+                    // 숫자와 하이픈 제거 후 순수 이름 추출 (예: "거실1-1" -> "거실")
+                    const baseName = locValue.replace(/[\d-]+$/, ''); // 숫자와 하이픈으로 끝나는 부분 제거
+
+                    // 저장된 기본 위치 목록에 추가
+                    if (!savedBaseLocations.has(baseName)) {
+                        savedBaseLocations.add(baseName);
+                        localStorage.setItem('savedBaseLocations', JSON.stringify(Array.from(savedBaseLocations)));
+                    }
+
+                    // 현재 문서에서 해당 baseName으로 시작하는 항목의 최대 번호 찾기
+                    let maxNum = 0;
+                    document.querySelectorAll('.location-input').forEach(existingInput => {
+                        if (existingInput === locationInput) return; // 자기 자신은 제외
+
+                        const existingVal = existingInput.value.trim();
+                        if (existingVal.startsWith(baseName)) {
+                            const numMatch = existingVal.match(/\d+/g); // 모든 숫자 찾기
+                            if (numMatch) {
+                                // 예: "거실1-1" -> [1, 1], "침실2" -> [2]
+                                const currentNum = parseInt(numMatch[0]); // 첫 번째 숫자만 사용
+                                if (!isNaN(currentNum) && currentNum > maxNum) {
+                                    maxNum = currentNum;
+                                }
+                            }
+                        }
+                    });
+
+                    // 현재 입력된 값에 이미 번호가 있는지 확인
+                    const currentNumMatch = locValue.match(/\d+/g);
+                    let currentBaseNameIsNumbered = false;
+                    if (currentNumMatch && locValue.startsWith(baseName)) {
+                        // 현재 입력된 값이 "거실1" 같은 형태인지 확인
+                        const potentialBaseName = locValue.replace(/\d.*$/, ''); // 숫자부터 뒤를 다 자름
+                        if (potentialBaseName === baseName) {
+                             currentBaseNameIsNumbered = true;
+                        }
+                    }
+
+
+                    // 현재 입력된 값에 번호가 없고, 동일한 baseName이 이미 존재한다면 번호 부여
+                    if (!currentBaseNameIsNumbered && maxNum > 0) {
+                        locationInput.value = `${baseName}${maxNum + 1}`;
+                    } else if (!currentBaseNameIsNumbered && maxNum === 0 && locValue === baseName) {
+                        // "거실"만 입력했는데 다른 "거실"이 없다면 "거실1"로
+                        locationInput.value = `${baseName}1`;
+                    }
                 }
+                // blur 시에도 체크박스 상태 업데이트 (이미 input 이벤트에서 처리되지만 안전장치)
+                if (locationInput.value.trim().length > 0) {
+                    rowCheckbox.checked = true;
+                } else {
+                    rowCheckbox.checked = false;
+                }
+                updateSelectAllCheckbox();
+
             }, 100);
         });
+
 
         // 체크박스 변경 시 전체 선택/해제 체크박스 상태 업데이트
         row.querySelector('.row-checkbox').addEventListener('change', updateSelectAllCheckbox);
@@ -166,36 +227,42 @@ document.addEventListener('DOMContentLoaded', function() {
         const baseUnitPrice = 25; // 기본 단가 25원
         const minPrice = 25000; // 최소 금액 25,000원
 
-        if (width > 0 || height > 0) {
-            const maxLength = Math.max(width, height); // 가로, 세로 중 긴 값
-            const minLength = Math.min(width, height); // 가로, 세로 중 짧은 값
-
-            // 기본 계산: 긴 길이 * 기본 단가
-            calculatedAmount = maxLength * baseUnitPrice;
-
-            // 짧은 길이에 따른 가중치 적용 (짧은 길이가 0이 아닐 때만 적용)
-            if (minLength > 0) {
-                const weight = minLength / 1000; // 1000mm 당 1.0 가중치
-                calculatedAmount = Math.round(calculatedAmount * weight); // 반올림
-            }
-
-            // 최소 금액 25,000원 적용 (가로, 세로 중 하나라도 0이 아닌 값이 있을 때)
-            if (calculatedAmount < minPrice) {
-                calculatedAmount = minPrice;
-            }
-
-        } else {
-            // 가로, 세로 둘 다 0이면 금액도 0
-            calculatedAmount = 0;
+        // 가로, 세로 둘 다 0이면 금액 관련 필드를 빈칸으로
+        if (width === 0 && height === 0) {
+            amountInput.value = '';
+            finalAmountInput.value = '';
+            updateTotal();
+            return; // 함수 종료
         }
 
+        // 가로 또는 세로 중 하나라도 값이 있을 때 계산
+        const maxLength = Math.max(width, height); // 가로, 세로 중 긴 값
+        const minLength = Math.min(width, height); // 가로, 세로 중 짧은 값
+
+        // 기본 계산: 긴 길이 * 기본 단가
+        calculatedAmount = maxLength * baseUnitPrice;
+
+        // 짧은 길이에 따른 가중치 적용 (짧은 길이가 0이 아닐 때만 적용)
+        if (minLength > 0) {
+            const weight = minLength / 1000; // 1000mm 당 1.0 가중치
+            calculatedAmount = Math.round(calculatedAmount * weight); // 반올림
+        }
+
+        // 최소 금액 25,000원 적용
+        if (calculatedAmount < minPrice) {
+            calculatedAmount = minPrice;
+        }
+
+        // '금액' 칸에는 추가 옵션이 적용되기 전의 순수 계산 금액 표시
+        amountInput.value = calculatedAmount.toLocaleString() + '원';
+
+        // '최종금액' 칸은 추가 옵션 적용 여부에 따라 변경
         let finalAmount = calculatedAmount;
         if (optionChecked) {
             finalAmount += 5000; // 추가 옵션 5000원 추가
         }
+        finalAmountInput.value = finalAmount.toLocaleString() + '원';
 
-        amountInput.value = finalAmount.toLocaleString() + '원'; // amountInput에 최종 금액을 표시
-        finalAmountInput.value = finalAmount.toLocaleString() + '원'; // 최종 금액 표시 (동일)
         updateTotal(); // 각 행의 최종 금액 변경 시 총 합계 업데이트
     }
 
@@ -203,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTotal() {
         let total = 0;
         document.querySelectorAll('.final-amount-input').forEach(input => {
+            // 빈 문자열이거나 숫자가 아닌 경우 0으로 처리
             const value = parseInt(input.value.replace(/[^0-9]/g, '')) || 0;
             total += value;
         });
@@ -213,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSelectAllCheckbox() {
         const allCheckboxes = document.querySelectorAll('.row-checkbox');
         const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+        // 모든 체크박스가 하나도 없으면 전체 선택 체크박스도 해제
         selectAllCheckbox.checked = allCheckboxes.length > 0 && allCheckboxes.length === checkedCheckboxes.length;
     }
 
