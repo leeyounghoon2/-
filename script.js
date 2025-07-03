@@ -1,366 +1,296 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const quotationBody = document.getElementById('quotationBody');
+    const quotationTableBody = document.getElementById('quotationTableBody');
     const addRowBtn = document.getElementById('addRowBtn');
     const removeRowBtn = document.getElementById('removeRowBtn');
-    const totalFinalAmountCell = document.getElementById('totalFinalAmount');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const totalFinalAmount = document.getElementById('totalFinalAmount');
     const completeBtn = document.getElementById('completeBtn');
+    const quotationContainer = document.querySelector('.quotation-container');
+    const customerContactInput = document.getElementById('customerContact');
 
-    // ===========================================
-    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
-    // ===========================================
-    const customerContactInput = document.querySelector('.customer-contact');
+    // 시공위치 자동 완성 데이터 (예시)
+    const locations = [
+        "안방", "작은방1", "작은방2", "거실", "주방", "베란다", "현관", "화장실"
+    ];
 
-    if (customerContactInput) {
-        customerContactInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
-            let formattedValue = '';
+    // 로컬 스토리지에서 시공위치 데이터 로드 (고유한 값만)
+    let uniqueLocations = new Set(JSON.parse(localStorage.getItem('savedLocations') || '[]'));
 
-            if (value.length > 11) {
-                value = value.substring(0, 11); // 11자리 초과하면 잘라냄
+    // 오늘 날짜 기본 설정
+    document.getElementById('quotationDate').valueAsDate = new Date();
+
+    // 입력 필드에 초기 하이픈 적용
+    if (customerContactInput.value) {
+        customerContactInput.value = formatPhoneNumber(customerContactInput.value);
+    }
+
+    // 전화번호 입력 시 자동 하이픈 추가
+    customerContactInput.addEventListener('input', function(e) {
+        e.target.value = formatPhoneNumber(e.target.value);
+    });
+
+    function formatPhoneNumber(phoneNumber) {
+        // 숫자만 남기고 모든 비숫자 문자 제거
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        let formatted = cleaned;
+
+        // 010으로 시작하는 11자리 번호 (가장 흔한 경우)
+        if (cleaned.length === 11 && cleaned.startsWith('010')) {
+            formatted = cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+        }
+        // 02로 시작하는 9-10자리 번호 (서울 지역번호)
+        else if (cleaned.length >= 9 && cleaned.length <= 10 && cleaned.startsWith('02')) {
+            if (cleaned.length === 9) { // 02-XXX-XXXX
+                formatted = cleaned.replace(/(\d{2})(\d{3})(\d{4})/, '$1-$2-$3');
+            } else if (cleaned.length === 10) { // 02-XXXX-XXXX
+                formatted = cleaned.replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
             }
-
-            if (value.length < 4) {
-                formattedValue = value;
-            } else if (value.length < 8) {
-                formattedValue = value.substring(0, 3) + '-' + value.substring(3);
-            } else {
-                formattedValue = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7);
-            }
-            e.target.value = formattedValue;
-        });
-    }
-
-    // ===========================================
-    // 자동 완성 (Autocomplete) 관련 변수 및 함수
-    // (이전 코드와 동일)
-    // ===========================================
-    let savedLocations = new Set();
-    const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
-
-    function loadSavedLocations() {
-        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (stored) {
-            savedLocations = new Set(JSON.parse(stored));
         }
-    }
-
-    function saveLocations() {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(savedLocations)));
-    }
-
-    function addLocationToSaved(location) {
-        const trimmedLocation = location.trim();
-        if (trimmedLocation && !savedLocations.has(trimmedLocation)) {
-            savedLocations.add(trimmedLocation);
-            saveLocations();
+        // 0XX로 시작하는 10자리 번호 (다른 지역번호)
+        else if (cleaned.length === 10 && !cleaned.startsWith('010') && cleaned.startsWith('0')) {
+            formatted = cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
         }
-    }
-
-    function showSuggestions(inputElement) {
-        const searchTerm = inputElement.value.trim().toLowerCase();
-        const parentTd = inputElement.closest('td');
-        let suggestionBox = parentTd.querySelector('.suggestions');
-
-        if (!suggestionBox) {
-            suggestionBox = document.createElement('div');
-            suggestionBox.className = 'suggestions';
-            parentTd.appendChild(suggestionBox);
+        // 그 외 (예: 짧은 번호, 국제 번호 등은 포맷하지 않음)
+        else {
+            formatted = cleaned; // 포맷하지 않은 원본 반환
         }
 
-        suggestionBox.innerHTML = '';
-        suggestionBox.style.display = 'block';
-
-        let hasSuggestions = false;
-        Array.from(savedLocations).forEach(location => {
-            if (location.toLowerCase().includes(searchTerm)) {
-                const suggestionItem = document.createElement('div');
-                suggestionItem.textContent = location;
-                suggestionItem.className = 'suggestion-item';
-                suggestionItem.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
-                    inputElement.value = location;
-                    suggestionBox.style.display = 'none';
-                    updateLocationNumbering();
-                    inputElement.focus();
-                });
-                suggestionBox.appendChild(suggestionItem);
-                hasSuggestions = true;
-            }
-        });
-
-        if (!hasSuggestions || searchTerm === '') {
-            suggestionBox.style.display = 'none';
-        }
+        return formatted;
     }
 
-    function hideSuggestions(inputElement) {
-        const parentTd = inputElement.closest('td');
-        const suggestionBox = parentTd.querySelector('.suggestions');
-        if (suggestionBox) {
-            setTimeout(() => {
-                suggestionBox.style.display = 'none';
-            }, 100);
-        }
+
+    // 행 추가 함수
+    function addRow(locationValue = '', widthValue = '1000', heightValue = '1000', amountValue = '25,000', finalAmountValue = '25,000', optionChecked = false, remarksValue = '') {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td><input type="checkbox" class="row-checkbox"></td>
+            <td>
+                <input type="text" class="location-input" placeholder="시공위치" value="${locationValue}">
+                <div class="suggestions"></div>
+            </td>
+            <td><input type="number" class="width-input" value="${widthValue}"></td>
+            <td><input type="number" class="height-input" value="${heightValue}"></td>
+            <td><input type="text" class="amount-input" value="${amountValue}" readonly></td>
+            <td><input type="checkbox" class="option-checkbox" ${optionChecked ? 'checked' : ''}></td>
+            <td><input type="text" class="final-amount-input" value="${finalAmountValue}" readonly></td>
+            <td><input type="text" class="remarks-input" placeholder="비고" value="${remarksValue}"></td>
+        `;
+        quotationTableBody.appendChild(newRow);
+        attachEventListenersToRow(newRow); // 새 행에 이벤트 리스너 연결
+        updateTotal(); // 총 합계 업데이트
     }
 
-    // ===========================================
-    // 시공위치 자동 번호 매기기
-    // (이전 코드와 동일)
-    // ===========================================
-    function updateLocationNumbering() {
-        const locationInputs = quotationBody.querySelectorAll('.location-input');
-        const baseLocationOccurrences = new Map();
-
-        locationInputs.forEach(input => {
-            const fullValue = input.value.trim();
-            if (fullValue === '') return;
-
-            const baseName = fullValue.replace(/( \d+-\d+|\s?\d+)$/, '').trim();
-            addLocationToSaved(baseName || fullValue);
-
-            const effectiveBaseName = baseName || fullValue;
-            if (!baseLocationOccurrences.has(effectiveBaseName)) {
-                baseLocationOccurrences.set(effectiveBaseName, []);
-            }
-            baseLocationOccurrences.get(effectiveBaseName).push(input);
-        });
-
-        baseLocationOccurrences.forEach((inputsForBase, baseName) => {
-            let defaultCount = 0;
-            let livingRoomCount = 0;
-
-            inputsForBase.forEach(input => {
-                let newValue = input.value;
-
-                if (baseName === '거실') {
-                    livingRoomCount++;
-                    newValue = `${baseName} 1-${livingRoomCount}`;
-                } else if (baseName) {
-                    defaultCount++;
-                    newValue = `${baseName}${defaultCount}`;
-                }
-
-                if (input.value !== newValue) {
-                    input.value = newValue;
-                    const event = new Event('input', { bubbles: true });
-                    input.dispatchEvent(event);
-                }
-            });
-        });
-        updateTotalSum();
-    }
-
-    // ===========================================
-    // 각 행에 대한 기능 설정 (최종금액 계산, 이벤트 리스너 등)
-    // (이전 코드와 동일)
-    // ===========================================
-    function setupRow(row) {
-        const checkItem = row.querySelector('.check-item');
-        const locationInput = row.querySelector('.location-input');
+    // 새 행에 이벤트 리스너 연결
+    function attachEventListenersToRow(row) {
         const widthInput = row.querySelector('.width-input');
         const heightInput = row.querySelector('.height-input');
+        const amountInput = row.querySelector('.amount-input');
         const optionCheckbox = row.querySelector('.option-checkbox');
-        const finalAmountCell = row.querySelector('.final-amount-cell');
+        const finalAmountInput = row.querySelector('.final-amount-input');
+        const locationInput = row.querySelector('.location-input');
+        const suggestionsDiv = row.querySelector('.suggestions');
 
-        function updateFinalAmount() {
-            let baseAmount = 0;
-            const width = parseFloat(widthInput.value) || 0;
-            const height = parseFloat(heightInput.value) || 0;
-
-            if (checkItem.checked && (width > 0 || height > 0)) {
-                baseAmount = Math.max(width, height) / 1000 * 25000;
-            } else {
-                baseAmount = 0;
+        // 가로, 세로, 옵션 변경 시 최종 금액 및 총 합계 업데이트
+        [widthInput, heightInput, optionCheckbox].forEach(input => {
+            input.addEventListener('input', () => calculateAmounts(row));
+            if (input.type === 'checkbox') {
+                input.addEventListener('change', () => calculateAmounts(row));
             }
+        });
 
-            let finalAmount = baseAmount;
-            if (optionCheckbox.checked) {
-                finalAmount += 15000;
-            }
-            finalAmountCell.textContent = finalAmount.toLocaleString('ko-KR') + '원';
+        // 초기 계산
+        calculateAmounts(row);
 
-            updateTotalSum();
-        }
-
+        // 시공위치 자동 완성 로직
         locationInput.addEventListener('input', function() {
-            if (this.value.trim() !== '') {
-                checkItem.checked = true;
-                showSuggestions(this);
+            const inputVal = this.value.toLowerCase();
+            suggestionsDiv.innerHTML = '';
+            if (inputVal.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const filteredSuggestions = Array.from(uniqueLocations).filter(loc =>
+                loc.toLowerCase().includes(inputVal)
+            ).slice(0, 5); // 최대 5개만 표시
+
+            if (filteredSuggestions.length > 0) {
+                filteredSuggestions.forEach(loc => {
+                    const item = document.createElement('div');
+                    item.classList.add('suggestion-item');
+                    item.textContent = loc;
+                    item.addEventListener('click', () => {
+                        locationInput.value = loc;
+                        suggestionsDiv.style.display = 'none';
+                        // 새 위치가 입력되면 Set에 추가하여 저장
+                        if (loc.trim() !== '' && !uniqueLocations.has(loc.trim())) {
+                            uniqueLocations.add(loc.trim());
+                            localStorage.setItem('savedLocations', JSON.stringify(Array.from(uniqueLocations)));
+                        }
+                    });
+                    suggestionsDiv.appendChild(item);
+                });
+                suggestionsDiv.style.display = 'block';
             } else {
-                checkItem.checked = false;
-                hideSuggestions(this);
+                suggestionsDiv.style.display = 'none';
             }
         });
 
-        locationInput.addEventListener('focus', function() {
-            showSuggestions(this);
-        });
-
+        // 입력 필드에서 포커스 잃으면 자동 완성 닫기
         locationInput.addEventListener('blur', function() {
-            hideSuggestions(this);
-            if (this.value.trim() !== '') {
-                const currentBaseName = this.value.replace(/( \d+-\d+|\s?\d+)$/, '').trim();
-                addLocationToSaved(currentBaseName || this.value.trim());
-                updateLocationNumbering();
-            } else {
-                checkItem.checked = false;
-                updateFinalAmount();
-            }
-        });
-
-        checkItem.addEventListener('change', updateFinalAmount);
-        widthInput.addEventListener('input', updateFinalAmount);
-        heightInput.addEventListener('input', updateFinalAmount);
-        optionCheckbox.addEventListener('change', updateFinalAmount);
-
-        if (locationInput.value.trim() !== '') {
-            checkItem.checked = true;
-        }
-        updateFinalAmount();
-    }
-
-    // ===========================================
-    // 총 합계 계산 및 업데이트 함수
-    // (이전 코드와 동일)
-    // ===========================================
-    function updateTotalSum() {
-        let totalSum = 0;
-        const allFinalAmountCells = document.querySelectorAll('.final-amount-cell');
-
-        allFinalAmountCells.forEach(cell => {
-            const amountText = cell.textContent.replace('원', '').replace(/,/g, '');
-            const amount = parseFloat(amountText) || 0;
-            totalSum += amount;
-        });
-
-        totalFinalAmountCell.textContent = totalSum.toLocaleString('ko-KR') + '원';
-    }
-
-    // ===========================================
-    // 행 추가/제거 기능
-    // (이전 코드와 동일)
-    // ===========================================
-    addRowBtn.addEventListener('click', function() {
-        const newRow = document.createElement('tr');
-        newRow.className = 'quotation-row';
-
-        const td1 = document.createElement('td'); const input1 = document.createElement('input'); input1.type = 'checkbox'; input1.className = 'check-item'; td1.appendChild(input1); newRow.appendChild(td1);
-        const td2 = document.createElement('td'); const input2 = document.createElement('input'); input2.type = 'text'; input2.className = 'location-input'; td2.appendChild(input2); newRow.appendChild(td2);
-        const td3 = document.createElement('td'); const input3 = document.createElement('input'); input3.type = 'number'; input3.className = 'width-input'; input3.step = '100'; td3.appendChild(input3); newRow.appendChild(td3);
-        const td4 = document.createElement('td'); const input4 = document.createElement('input'); input4.type = 'number'; input4.className = 'height-input'; input4.step = '100'; td4.appendChild(input4); newRow.appendChild(td4);
-        const td6 = document.createElement('td'); const input6 = document.createElement('input'); input6.type = 'checkbox'; input6.className = 'option-checkbox'; td6.appendChild(input6); newRow.appendChild(td6);
-        const td7 = document.createElement('td'); td7.className = 'final-amount-cell'; td7.textContent = ''; newRow.appendChild(td7);
-        const td8 = document.createElement('td'); const input8 = document.createElement('input'); input8.type = 'text'; input8.className = 'remarks-input'; td8.appendChild(input8); newRow.appendChild(td8);
-
-        quotationBody.appendChild(newRow);
-        setupRow(newRow);
-        updateLocationNumbering();
-    });
-
-    removeRowBtn.addEventListener('click', function() {
-        const allRows = quotationBody.querySelectorAll('.quotation-row');
-        const checkedCheckboxes = quotationBody.querySelectorAll('.check-item:checked');
-        let rowsToDelete = [];
-
-        if (checkedCheckboxes.length > 0) {
-            checkedCheckboxes.forEach(checkbox => {
-                const row = checkbox.closest('tr.quotation-row');
-                if (row) {
-                    rowsToDelete.push(row);
+            // blur 이벤트가 suggestion-item 클릭보다 먼저 발생할 수 있으므로, 지연 시간을 줌
+            setTimeout(() => {
+                suggestionsDiv.style.display = 'none';
+                // 새 위치가 입력되면 Set에 추가하여 저장 (blur 시점에도 저장)
+                const locValue = locationInput.value.trim();
+                if (locValue !== '' && !uniqueLocations.has(locValue)) {
+                    uniqueLocations.add(locValue);
+                    localStorage.setItem('savedLocations', JSON.stringify(Array.from(uniqueLocations)));
                 }
-            });
-        } else {
-            if (allRows.length > 0) {
-                rowsToDelete.push(allRows[allRows.length - 1]);
+            }, 100);
+        });
+
+        // 체크박스 변경 시 전체 선택/해제 체크박스 상태 업데이트
+        row.querySelector('.row-checkbox').addEventListener('change', updateSelectAllCheckbox);
+    }
+
+    // 금액 계산 함수
+    function calculateAmounts(row) {
+        const width = parseInt(row.querySelector('.width-input').value) || 0;
+        const height = parseInt(row.querySelector('.height-input').value) || 0;
+        const optionChecked = row.querySelector('.option-checkbox').checked;
+        const amountInput = row.querySelector('.amount-input');
+        const finalAmountInput = row.querySelector('.final-amount-input');
+
+        let calculatedAmount = 0;
+        const baseUnitPrice = 25; // 기본 단가 25원
+        const minPrice = 25000; // 최소 금액 25,000원
+
+        if (width > 0 || height > 0) {
+            const maxLength = Math.max(width, height); // 가로, 세로 중 긴 값
+            const minLength = Math.min(width, height); // 가로, 세로 중 짧은 값
+
+            // 기본 계산: 긴 길이 * 기본 단가
+            calculatedAmount = maxLength * baseUnitPrice;
+
+            // 짧은 길이에 따른 가중치 적용 (짧은 길이가 1000 이상일 경우 1000mm 당 1.0 가중치)
+            if (minLength > 0) {
+                const weight = minLength / 1000; // 1000mm 당 1.0 가중치
+                calculatedAmount = Math.round(calculatedAmount * weight); // 반올림
             }
+
+            // 최소 금액 25,000원 적용
+            if (calculatedAmount < minPrice && (width > 0 || height > 0)) {
+                calculatedAmount = minPrice;
+            } else if (width === 0 && height === 0) { // 가로, 세로 둘 다 0이면 금액도 0
+                calculatedAmount = 0;
+            }
+
+        } else {
+            // 가로, 세로 둘 다 0이면 금액도 0
+            calculatedAmount = 0;
         }
 
-        if (rowsToDelete.length === 0 || allRows.length - rowsToDelete.length < 1) {
-            alert('더 이상 행을 제거할 수 없습니다. 최소 한 개의 행은 유지됩니다.');
+        let finalAmount = calculatedAmount;
+        if (optionChecked) {
+            finalAmount += 5000; // 추가 옵션 5000원 추가
+        }
+
+        amountInput.value = finalAmount.toLocaleString() + '원'; // amountInput에 최종 금액을 표시
+        finalAmountInput.value = finalAmount.toLocaleString() + '원'; // 최종 금액 표시 (동일)
+        updateTotal(); // 각 행의 최종 금액 변경 시 총 합계 업데이트
+    }
+
+    // 총 합계 업데이트 함수
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.final-amount-input').forEach(input => {
+            const value = parseInt(input.value.replace(/[^0-9]/g, '')) || 0;
+            total += value;
+        });
+        totalFinalAmount.textContent = total.toLocaleString() + '원';
+    }
+
+    // 전체 선택/해제 체크박스 상태 업데이트
+    function updateSelectAllCheckbox() {
+        const allCheckboxes = document.querySelectorAll('.row-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+        selectAllCheckbox.checked = allCheckboxes.length > 0 && allCheckboxes.length === checkedCheckboxes.length;
+    }
+
+    // 초기 행 추가 (기본 1개 행)
+    addRow();
+
+    // 행 추가 버튼 클릭 이벤트
+    addRowBtn.addEventListener('click', () => addRow());
+
+    // 행 삭제 버튼 클릭 이벤트
+    removeRowBtn.addEventListener('click', () => {
+        const checkedRows = document.querySelectorAll('.row-checkbox:checked');
+        if (checkedRows.length === 0) {
+            alert('삭제할 행을 선택해주세요.');
             return;
         }
-
-        rowsToDelete.forEach(row => {
-            if (row.parentNode) {
-                row.parentNode.removeChild(row);
-            }
-        });
-
-        updateLocationNumbering();
+        if (confirm(`${checkedRows.length}개의 행을 삭제하시겠습니까?`)) {
+            checkedRows.forEach(checkbox => {
+                checkbox.closest('tr').remove();
+            });
+            updateTotal(); // 총 합계 업데이트
+            updateSelectAllCheckbox(); // 전체 선택 체크박스 상태 업데이트
+        }
     });
 
-    // ===========================================
-    // 완료 버튼 (JPG 저장) 기능 강화
-    // (이전 코드와 동일)
-    // ===========================================
-    completeBtn.addEventListener('click', function() {
-        const quotationContainer = document.querySelector('.quotation-container');
-        const originalOverflowX = quotationContainer.style.overflowX;
+    // 전체 선택/해제 체크박스 클릭 이벤트
+    selectAllCheckbox.addEventListener('change', function() {
+        document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
 
+    // '완료' 버튼 클릭 시 JPG 저장
+    completeBtn.addEventListener('click', function() {
+        // 캡처 모드 클래스 추가 (placeholder 숨기기 등)
         document.body.classList.add('capture-mode');
 
-        const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
-        customerInputs.forEach(input => {
-            if (input.value.trim() === '') {
-                input.setAttribute('data-placeholder-text', input.placeholder || '');
-                input.placeholder = '';
-            }
+        // 고객 정보 필드와 시공위치, 비고 필드의 placeholder를 숨기기
+        const allInputs = document.querySelectorAll('input[placeholder]');
+        allInputs.forEach(input => {
+            input.dataset.placeholder = input.placeholder; // 원래 placeholder 저장
+            input.placeholder = ''; // placeholder 비우기
         });
 
-        quotationContainer.style.overflowX = 'visible';
-
         html2canvas(quotationContainer, {
-            scale: 2,
-            scrollY: -window.scrollY,
-            useCORS: true,
-            logging: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff'
+            scale: 2, // 고해상도 캡처를 위해 스케일 증가
+            useCORS: true // 외부 이미지(CDN 등) 사용 시 필요
         }).then(canvas => {
-            const image = canvas.toDataURL('image/jpeg', 0.9);
+            const imgData = canvas.toDataURL('image/jpeg', 0.9); // JPG로 변환, 품질 0.9
 
             const link = document.createElement('a');
-            link.href = image;
-
             const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const filename = `견적서_${year}${month}${day}_${hours}${minutes}.jpg`;
+            const filename = `견적서_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}.jpg`;
+            
             link.download = filename;
-
+            link.href = imgData;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            alert('견적서가 JPG 이미지로 저장되었습니다!');
-        }).catch(error => {
-            console.error('이미지 저장 중 오류 발생:', error);
-            alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
-        }).finally(() => {
+            // 캡처 모드 클래스 제거 (placeholder 원상 복구)
             document.body.classList.remove('capture-mode');
-            quotationContainer.style.overflowX = originalOverflowX;
-
-            customerInputs.forEach(input => {
-                const originalPlaceholder = input.getAttribute('data-placeholder-text');
-                if (originalPlaceholder !== null) {
-                    input.placeholder = originalPlaceholder;
-                    input.removeAttribute('data-placeholder-text');
-                }
+            allInputs.forEach(input => {
+                input.placeholder = input.dataset.placeholder || ''; // 원래 placeholder 복원
+            });
+        }).catch(error => {
+            console.error('oops, something went wrong!', error);
+            alert('견적서 이미지 저장에 실패했습니다. 콘솔을 확인해주세요.');
+            // 오류 발생 시에도 클래스 제거 및 placeholder 복원
+            document.body.classList.remove('capture-mode');
+            allInputs.forEach(input => {
+                input.placeholder = input.dataset.placeholder || '';
             });
         });
     });
 
-    // ===========================================
-    // 초기 설정 (페이지 로드 시)
-    // (이전 코드와 동일)
-    // ===========================================
-    loadSavedLocations();
-
-    const initialRows = quotationBody.querySelectorAll('.quotation-row');
-    initialRows.forEach(setupRow);
-
-    updateLocationNumbering();
+    // 초기 총 합계 계산
+    updateTotal();
 });
