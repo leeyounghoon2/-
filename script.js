@@ -79,19 +79,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function attachEventListenersToRow(row) {
         const widthInput = row.querySelector('.width-input');
         const heightInput = row.querySelector('.height-input');
-        // const amountInput = row.querySelector('.amount-input'); // calculateAmounts에서 직접 접근
-        // const optionCheckbox = row.querySelector('.option-checkbox'); // calculateAmounts에서 직접 접근
-        // const finalAmountInput = row.querySelector('.final-amount-input'); // calculateAmounts에서 직접 접근
+        const optionCheckbox = row.querySelector('.option-checkbox'); // 옵션 체크박스도 여기서 가져옴
         const locationInput = row.querySelector('.location-input');
         const suggestionsDiv = row.querySelector('.suggestions');
         const rowCheckbox = row.querySelector('.row-checkbox'); // 해당 행의 체크박스
 
         // 가로, 세로, 옵션 변경 시 최종 금액 및 총 합계 업데이트
         [widthInput, heightInput].forEach(input => {
-            input.addEventListener('input', () => calculateAmounts(row));
+            if (input) { // input 요소가 존재하는지 확인
+                input.addEventListener('input', () => calculateAmounts(row));
+            }
         });
-        row.querySelector('.option-checkbox').addEventListener('change', () => calculateAmounts(row));
-
+        if (optionCheckbox) { // optionCheckbox 요소가 존재하는지 확인
+            optionCheckbox.addEventListener('change', () => calculateAmounts(row));
+        }
 
         // 시공위치 입력 시 체크박스 자동 선택/해제 및 자동 완성 로직
         locationInput.addEventListener('input', function() {
@@ -223,9 +224,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const width = parseInt(row.querySelector('.width-input').value) || 0;
         const height = parseInt(row.querySelector('.height-input').value) || 0;
         const optionCheckbox = row.querySelector('.option-checkbox'); // 옵션 체크박스 직접 가져오기
-        const optionChecked = optionCheckbox.checked; // 체크 여부
+        const optionChecked = optionCheckbox ? optionCheckbox.checked : false; // 옵션 체크박스가 없으면 false
         const amountInput = row.querySelector('.amount-input');
         const finalAmountInput = row.querySelector('.final-amount-input');
+
+        // 요소들이 존재하는지 다시 한번 확인 (방어 코드)
+        if (!amountInput || !finalAmountInput) {
+            console.error('금액 입력 필드를 찾을 수 없습니다.');
+            return;
+        }
 
         let calculatedAmount = 0;
         const baseUnitPrice = 25; // 기본 단가 25원
@@ -247,10 +254,14 @@ document.addEventListener('DOMContentLoaded', function() {
         calculatedAmount = maxLength * baseUnitPrice;
 
         // 짧은 길이에 따른 가중치 적용 (짧은 길이가 0이 아닐 때만 적용)
+        // 1000mm 이상일 때 추가 가중치 1.0, 1000mm 미만은 비율대로
         if (minLength > 0) {
-            const weight = minLength / 1000; // 1000mm 당 1.0 가중치
-            calculatedAmount = Math.round(calculatedAmount * weight); // 반올림
+            const minLengthInMeters = minLength / 1000; // 짧은 길이를 미터 단위로
+            const additionalWeight = Math.min(minLengthInMeters, 1.0); // 최대 1.0까지만 가중치 적용
+            calculatedAmount = calculatedAmount * (1 + additionalWeight); // 기본 계산 값에 1 + 가중치 곱함
+            calculatedAmount = Math.round(calculatedAmount); // 반올림
         }
+
 
         // 최소 금액 25,000원 적용
         if (calculatedAmount < minPrice) {
@@ -285,8 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSelectAllCheckbox() {
         const allCheckboxes = document.querySelectorAll('.row-checkbox');
         const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
-        // 모든 체크박스가 하나도 없으면 전체 선택 체크박스도 해제
-        // 모든 체크박스가 하나도 없으면 selectAllCheckbox를 비활성화 (false)
+        
         if (allCheckboxes.length === 0) {
             selectAllCheckbox.checked = false;
             selectAllCheckbox.disabled = true; // 체크박스 비활성화
@@ -297,7 +307,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 초기 행 추가 (기본 1개 행)
-    addRow();
+    // HTML에 이미 첫 행이 존재하므로, 이 초기 addRow 호출은 필요 없을 수 있습니다.
+    // 만약 항상 빈 테이블로 시작하고 싶다면, HTML에서 첫 <tr>...</tr>을 제거하고 addRow()를 사용하세요.
+    // 현재는 HTML에 한 줄이 있으므로, 이 부분은 주석 처리하거나 제거해도 무방합니다.
+    // addRow(); 
+
+    // 초기 로드 시 기존 HTML 행에 이벤트 리스너 부착
+    document.querySelectorAll('#quotationTableBody tr').forEach(row => {
+        attachEventListenersToRow(row);
+    });
+
 
     // 행 추가 버튼 클릭 이벤트
     addRowBtn.addEventListener('click', () => addRow());
@@ -370,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 초기 총 합계 계산 (페이지 로드 시 한번 더 호출하여 초기 상태를 정확히 반영)
+    // 페이지 로드 시 기존 HTML 행 및 총 합계 업데이트
     updateTotal();
     updateSelectAllCheckbox(); // 초기 체크박스 상태 업데이트
 });
