@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // '최종금액' 칸은 추가 옵션 적용 여부에 따라 변경
         let finalAmount = calculatedAmount;
         if (optionChecked) {
-            finalAmount += 5000; // 추가 옵션 5000원 추가
+            finalAmount += 15000; // 추가 옵션 5000원 추가
         }
         finalAmountInput.value = finalAmount.toLocaleString() + '원';
 
