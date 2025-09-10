@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 각 행에 대한 기능 설정 (최종금액 계산, 이벤트 리스너 등)
+    // (이전 코드와 동일)
     // ===========================================
     function setupRow(row) {
         const checkItem = row.querySelector('.check-item');
@@ -167,20 +168,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const height = parseFloat(heightInput.value) || 0;
 
             if (checkItem.checked && (width > 0 || height > 0)) {
-                // 기본 금액 계산: 세로 사이즈 * 25
-                let basePrice = height * 25;
-
-                // 가로 사이즈에 따른 배율 계산
-                let multiplier = 1;
-                if (width > 1000) {
-                    multiplier = width / 1000;
-                }
-
-                baseAmount = basePrice * multiplier;
+                baseAmount = Math.max(width, height) / 1000 * 25000;
             } else {
                 baseAmount = 0;
             }
-            
+
             let finalAmount = baseAmount;
             if (optionCheckbox.checked) {
                 finalAmount += 15000;
@@ -207,55 +199,4 @@ document.addEventListener('DOMContentLoaded', function() {
         locationInput.addEventListener('blur', function() {
             hideSuggestions(this);
             if (this.value.trim() !== '') {
-                const currentBaseName = this.value.replace(/( \d+-\d+|\s?\d+)$/, '').trim();
-                addLocationToSaved(currentBaseName || this.value.trim());
-                updateLocationNumbering();
-            } else {
-                checkItem.checked = false;
-                updateFinalAmount();
-            }
-        });
-
-        checkItem.addEventListener('change', updateFinalAmount);
-        widthInput.addEventListener('input', updateFinalAmount);
-        heightInput.addEventListener('input', updateFinalAmount);
-        optionCheckbox.addEventListener('change', updateFinalAmount);
-
-        if (locationInput.value.trim() !== '') {
-            checkItem.checked = true;
-        }
-        updateFinalAmount();
-    }
-
-    // ===========================================
-    // 총 합계 계산 및 업데이트 함수
-    // (이전 코드와 동일)
-    // ===========================================
-    function updateTotalSum() {
-        let totalSum = 0;
-        const allFinalAmountCells = document.querySelectorAll('.final-amount-cell');
-
-        allFinalAmountCells.forEach(cell => {
-            const amountText = cell.textContent.replace('원', '').replace(/,/g, '');
-            const amount = parseFloat(amountText) || 0;
-            totalSum += amount;
-        });
-
-        totalFinalAmountCell.textContent = totalSum.toLocaleString('ko-KR') + '원';
-    }
-
-    // ===========================================
-    // 행 추가/제거 기능
-    // (이전 코드와 동일)
-    // ===========================================
-    addRowBtn.addEventListener('click', function() {
-        const newRow = document.createElement('tr');
-        newRow.className = 'quotation-row';
-
-        const td1 = document.createElement('td'); const input1 = document.createElement('input'); input1.type = 'checkbox'; input1.className = 'check-item'; td1.appendChild(input1); newRow.appendChild(td1);
-        const td2 = document.createElement('td'); const input2 = document.createElement('input'); input2.type = 'text'; input2.className = 'location-input'; td2.appendChild(input2); newRow.appendChild(td2);
-        const td3 = document.createElement('td'); const input3 = document.createElement('input'); input3.type = 'number'; input3.className = 'width-input'; input3.step = '100'; td3.appendChild(input3); newRow.appendChild(td3);
-        const td4 = document.createElement('td'); const input4 = document.createElement('input'); input4.type = 'number'; input4.className = 'height-input'; input4.step = '100'; td4.appendChild(input4); newRow.appendChild(td4);
-        const td6 = document.createElement('td'); const input6 = document.createElement('input'); input6.type = 'checkbox'; input6.className = 'option-checkbox'; td6.appendChild(input6); newRow.appendChild(td6);
-        const td7 = document.createElement('td'); td7.className = 'final-amount-cell'; td7.textContent = ''; newRow.appendChild(td7);
-        const td8 = document.createElement('td'); const input8 = document.createElement('input'); input8.type = 'text';
+                const currentBaseName = this.value.
