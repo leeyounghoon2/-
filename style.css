@@ -43,4 +43,347 @@ h1 {
     background-color: #f2f2f2;
     color: #555;
     font-weight: bold;
-    width: 15%; /* 시
+    width: 15%; /* 시공 날짜, 고객 이름, 고객 연락처 등 제목 셀 너비 */
+}
+
+.customer-info td {
+    width: 18.33%; /* 입력 필드 셀 너비 (나머지를 균등 분배) */
+}
+
+.customer-info input[type="date"],
+.customer-info input[type="text"] {
+    width: calc(100% - 16px); /* 부모 셀에 꽉 차게 */
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.9em;
+}
+
+.customer-info tr:last-child th,
+.customer-info tr:last-child td {
+    width: auto; /* 고객 주소 행은 자동으로 너비 조절 */
+}
+/* // 고객 정보 섹션 스타일 */
+
+.action-buttons {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.action-buttons button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover {
+    background-color: #45a049;
+}
+
+.action-buttons button#removeRowBtn {
+    background-color: #f44336;
+}
+
+.action-buttons button#removeRowBtn:hover {
+    background-color: #da190b;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9em;
+    min-width: 800px; /* 데스크톱에서 테이블 최소 너비 유지 */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    position: relative;
+}
+/* 기본적으로 td, th는 줄바꿈 허용. 특정 input 내부의 텍스트는 input 넓이 따라감 */
+/* 단, 고객 정보 테이블의 th, td는 white-space: nowrap; 유지 */
+
+th {
+    background-color: #f2f2f2;
+    color: #555;
+    font-weight: bold;
+    white-space: nowrap; /* 제목은 줄바꿈 안함 */
+}
+
+/* 개별 열 너비 조정 (데스크톱) */
+th:nth-child(2), /* 시공위치 */
+td:nth-child(2) {
+    width: 16%; /* 기존보다 더 줄임 */
+    min-width: 120px;
+}
+th:nth-child(3), /* 사이즈(가로) */
+td:nth-child(3) {
+    width: 10%;
+    min-width: 80px;
+}
+th:nth-child(4), /* 사이즈(세로) */
+td:nth-child(4) {
+    width: 10%;
+    min-width: 80px;
+}
+th:nth-child(5), /* 추가옵션 */
+td:nth-child(5) {
+    width: 8%; /* 많이 줄임 */
+    min-width: 60px;
+}
+th:nth-child(6), /* 최종금액 */
+td:nth-child(6) {
+    width: 12%; /* 10,000원 정도 들어갈 사이즈로 조정 */
+    min-width: 100px;
+}
+th:nth-child(7), /* 비고 */
+td:nth-child(7) {
+    width: 18%; /* 크기 늘림 */
+    min-width: 140px;
+}
+
+
+input[type="text"],
+input[type="number"] {
+    width: calc(100% - 16px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: normal; /* input 내부 텍스트는 줄바꿈 가능 */
+}
+
+input.remarks-input {
+    width: calc(100% - 16px);
+    min-width: 80px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin: 0;
+    vertical-align: middle;
+}
+
+tfoot .total-row {
+    font-weight: bold;
+    background-color: #e0f2f7;
+}
+
+tfoot .total-row td {
+    border-top: 2px solid #aaa;
+}
+
+/* 총 합계 셀 너비 조정 */
+#totalFinalAmount {
+    width: 12%; /* 최종금액과 동일하게 설정하여 1,000,000원 정도 들어갈 공간 확보 */
+    min-width: 120px; /* 1,000,000원 이상 들어갈 수 있도록 최소 너비 확보 */
+}
+
+
+/* 자동 완성 제안 목록 스타일 */
+.suggestions {
+    position: absolute;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 100;
+    width: calc(100% - 2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none;
+    left: 0;
+    top: 100%;
+}
+
+.suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* 완료 버튼 스타일 */
+.completion-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#completeBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#completeBtn:hover {
+    background-color: #0056b3;
+}
+
+
+/* ================================================= */
+/* 스마트폰 화면을 위한 반응형 CSS */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .quotation-container {
+        padding: 10px;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-width: unset; /* 모바일에서는 최소 너비 제한 해제 */
+    }
+
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+
+    /* 고객 정보 테이블 반응형 */
+    .customer-info table {
+        display: block;
+        width: 100%;
+    }
+
+    .customer-info tr {
+        display: flex; /* 가로로 나열된 th, td를 세로로 정렬 */
+        flex-wrap: wrap; /* 내용이 길면 다음 줄로 */
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
+    }
+
+    .customer-info th,
+    .customer-info td {
+        border: none; /* 내부 테두리 제거 */
+        width: 50%; /* th, td를 가로로 절반씩 */
+        box-sizing: border-box;
+        padding: 5px;
+        white-space: normal; /* 텍스트 줄바꿈 허용 */
+    }
+
+    .customer-info th:first-child, /* 시공 날짜, 고객 주소 제목 */
+    .customer-info td:nth-child(odd) { /* 고객 이름, 고객 연락처 제목 */
+        width: 35%; /* 제목 열 너비 조정 */
+        text-align: left;
+    }
+
+    .customer-info td:nth-child(even), /* 시공 날짜, 고객 이름, 고객 연락처 입력칸 */
+    .customer-info tr:last-child td { /* 고객 주소 입력칸 */
+        width: 65%; /* 내용 열 너비 조정 */
+        text-align: left;
+    }
+
+    .customer-info input[type="date"],
+    .customer-info input[type="text"] {
+        width: calc(100% - 10px); /* 패딩 고려 */
+        font-size: 0.85em;
+        padding: 5px;
+    }
+
+
+    .action-buttons {
+        text-align: center;
+    }
+
+    .action-buttons button {
+        padding: 6px 12px;
+        font-size: 1em;
+        margin: 0 3px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 650px; /* 모든 열이 스크롤 없이 보이도록 최소 너비 설정 */
+        font-size: 0.8em;
+    }
+
+    th, td {
+        padding: 5px 3px;
+        min-width: 60px; /* 기본 최소 너비 */
+        white-space: nowrap; /* 모바일에서도 테이블 내용은 줄바꿈 안함 */
+    }
+
+    /* 모바일에서 각 열 너비 조정 */
+    th:nth-child(1), /* 체크 */
+    td:nth-child(1) {
+        min-width: 40px;
+    }
+    th:nth-child(2), /* 시공위치 */
+    td:nth-child(2) {
+        min-width: 100px; /* PC에서 줄인 만큼 모바일에서도 조정 */
+    }
+    th:nth-child(3), /* 사이즈(가로) */
+    td:nth-child(3) {
+        min-width: 80px;
+    }
+    th:nth-child(4), /* 사이즈(세로) */
+    td:nth-child(4) {
+        min-width: 80px;
+    }
+    th:nth-child(5), /* 추가옵션 */
+    td:nth-child(5) {
+        min-width: 50px; /* PC에서 줄인 만큼 모바일에서도 조정 */
+    }
+    th:nth-child(6), /* 최종금액 */
+    td:nth-child(6) {
+        min-width: 100px; /* 10,000원 정도 들어갈 사이즈로 조정 */
+    }
+    th:nth-child(7), /* 비고 */
+    td:nth-child(7) {
+        min-width: 120px; /* PC에서 늘린 만큼 모바일에서도 조정 */
+    }
+
+
+    input[type="text"],
+    input[type="number"] {
+        width: 90%;
+        padding: 4px;
+        font-size: 0.85em;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.4);
+    }
+
+    tfoot .total-row td {
+        font-size: 0.9em;
+    }
+
+    /* 모바일 자동완성 제안 너비 조정 */
+    .suggestions {
+        width: calc(100% - 2px); /* 부모 td 너비에 맞춤 */
+    }
+
+    .completion-button-container #completeBtn {
+        padding: 10px 20px;
+        font-size: 1.1em;
+    }
+
+    /* JPG 저장 시 input placeholder 숨기기 */
+    body.capture-mode input::placeholder {
+        color: transparent;
+    }
+}
