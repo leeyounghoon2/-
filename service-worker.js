@@ -1,5 +1,5 @@
 // service-worker.js
-const CACHE_NAME = 'quotation-app-v1'; // 캐시 버전 (변경될 때마다 업데이트)
+const CACHE_NAME = 'quotation-app-v2'; // 캐시 버전 (변경될 때마다 업데이트)
 const urlsToCache = [
   '/', // 루트 경로
   '/index.html',
@@ -77,4 +77,5 @@ self.addEventListener('fetch', event => {
     // Cross-origin 요청 (CDN 등)은 기본 fetch 사용
     event.respondWith(fetch(event.request));
   }
+
 });
