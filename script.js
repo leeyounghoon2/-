@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const completeBtn = document.getElementById('completeBtn');
 
     // ===========================================
-    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
+    // 고객 연락처 자동 하이픈 추가 기능
     // ===========================================
     const customerContactInput = document.querySelector('.customer-contact');
 
@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 자동 완성 (Autocomplete) 관련 변수 및 함수
-    // (이전 코드와 동일)
     // ===========================================
     let savedLocations = new Set();
     const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
@@ -105,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 시공위치 자동 번호 매기기
-    // (이전 코드와 동일)
     // ===========================================
     function updateLocationNumbering() {
         const locationInputs = quotationBody.querySelectorAll('.location-input');
@@ -152,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 각 행에 대한 기능 설정 (최종금액 계산, 이벤트 리스너 등)
-    // (이전 코드와 동일)
     // ===========================================
     function setupRow(row) {
         const checkItem = row.querySelector('.check-item');
@@ -167,9 +164,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
 
-            if (checkItem.checked && (width > 0 || height > 0)) {
-                baseAmount = Math.max(width, height) / 1000 * 25000;
+            // 체크박스가 선택되었고, 가로 사이즈가 1000 초과이고, 세로 사이즈가 0보다 클 경우에만 계산합니다.
+            if (checkItem.checked && width > 1000 && height > 0) {
+                // 기본 금액은 세로 사이즈를 기준으로 하고, 가로 사이즈에 따라 배수를 곱합니다.
+                const basePrice = (height / 1000) * 25000;
+                const widthMultiplier = width / 1000;
+                baseAmount = basePrice * widthMultiplier;
             } else {
+                // 이 외의 모든 경우는 금액을 0으로 설정합니다.
                 baseAmount = 0;
             }
 
@@ -221,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 총 합계 계산 및 업데이트 함수
-    // (이전 코드와 동일)
     // ===========================================
     function updateTotalSum() {
         let totalSum = 0;
@@ -238,7 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 행 추가/제거 기능
-    // (이전 코드와 동일)
     // ===========================================
     addRowBtn.addEventListener('click', function() {
         const newRow = document.createElement('tr');
@@ -291,7 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 완료 버튼 (JPG 저장) 기능 강화
-    // (이전 코드와 동일)
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
@@ -355,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 초기 설정 (페이지 로드 시)
-    // (이전 코드와 동일)
     // ===========================================
     loadSavedLocations();
 
