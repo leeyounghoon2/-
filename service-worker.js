@@ -77,6 +77,4 @@ self.addEventListener('fetch', event => {
     // Cross-origin 요청 (CDN 등)은 기본 fetch 사용
     event.respondWith(fetch(event.request));
   }
-
 });
-
