@@ -3,32 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>목수방충망 견적서</title>
+    <title>웹 견적서 프로그램</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="quotation-container">
-        <h1 class="document-title">목수방충망 견적서</h1>
+        <h1>목수방충망_견적서</h1>
 
         <div class="customer-info">
             <table>
-                <thead>
-                    <tr>
-                        <th>시공 날짜</th>
-                        <td><input type="date" id="quotationDate"></td>
-                        <th>고객 이름</th>
-                        <td><input type="text" id="customerName" placeholder="고객 이름을 입력하세요"></td>
-                        <th>고객 연락처</th>
-                        <td><input type="text" id="customerContact" placeholder="고객 연락처를 입력하세요"></td>
-                    </tr>
-                    <tr>
-                        <th>고객 주소</th>
-                        <td colspan="5"><input type="text" id="customerAddress" placeholder="고객 주소를 입력하세요"></td>
-                    </tr>
-                </thead>
+                <tr>
+                    <th>시공 날짜</th>
+                    <td><input type="date" class="construction-date"></td>
+                    <th>고객 이름</th>
+                    <td><input type="text" class="customer-name" placeholder="고객 이름을 입력"></td>
+                    <th>고객 연락처</th>
+                    <td><input type="text" class="customer-contact" placeholder="고객 연락처를 입력"></td>
+                </tr>
+                <tr>
+                    <th>고객 주소</th>
+                    <td colspan="5"><input type="text" class="customer-address" placeholder="고객 주소를 입력하세요"></td>
+                </tr>
             </table>
         </div>
-
         <div class="action-buttons">
             <button id="addRowBtn">+</button>
             <button id="removeRowBtn">-</button>
@@ -37,7 +34,7 @@
         <table>
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="selectAll"></th>
+                    <th>체크</th>
                     <th>시공위치</th>
                     <th>사이즈(가로)</th>
                     <th>사이즈(세로)</th>
@@ -47,35 +44,72 @@
                     <th>비고</th>
                 </tr>
             </thead>
-            <tbody id="quotationTableBody">
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td>
-                        <input type="text" class="location-input" placeholder="시공위치">
-                        <div class="suggestions"></div>
-                    </td>
-                    <td><input type="number" class="width-input" value=""></td>
-                    <td><input type="number" class="height-input" value=""></td>
-                    <td><input type="text" class="amount-input" value="" readonly></td>
+            <tbody id="quotationBody">
+                <tr class="quotation-row">
+                    <td><input type="checkbox" class="check-item"></td>
+                    <td><input type="text" class="location-input"></td>
+                    <td><input type="number" class="width-input" step="100"></td>
+                    <td><input type="number" class="height-input" step="100"></td>
+                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
-                    <td><input type="text" class="final-amount-input" value="" readonly></td>
-                    <td><input type="text" class="remarks-input" placeholder="비고"></td>
+                    <td class="final-amount-cell"></td>
+                    <td><input type="text" class="remarks-input"></td>
+                </tr>
+                <tr class="quotation-row">
+                    <td><input type="checkbox" class="check-item"></td>
+                    <td><input type="text" class="location-input"></td>
+                    <td><input type="number" class="width-input" step="100"></td>
+                    <td><input type="number" class="height-input" step="100"></td>
+                    <td class="amount-cell"></td>
+                    <td><input type="checkbox" class="option-checkbox"></td>
+                    <td class="final-amount-cell"></td>
+                    <td><input type="text" class="remarks-input"></td>
+                </tr>
+                <tr class="quotation-row">
+                    <td><input type="checkbox" class="check-item"></td>
+                    <td><input type="text" class="location-input"></td>
+                    <td><input type="number" class="width-input" step="100"></td>
+                    <td><input type="number" class="height-input" step="100"></td>
+                    <td class="amount-cell"></td>
+                    <td><input type="checkbox" class="option-checkbox"></td>
+                    <td class="final-amount-cell"></td>
+                    <td><input type="text" class="remarks-input"></td>
+                </tr>
+                <tr class="quotation-row">
+                    <td><input type="checkbox" class="check-item"></td>
+                    <td><input type="text" class="location-input"></td>
+                    <td><input type="number" class="width-input" step="100"></td>
+                    <td><input type="number" class="height-input" step="100"></td>
+                    <td class="amount-cell"></td>
+                    <td><input type="checkbox" class="option-checkbox"></td>
+                    <td class="final-amount-cell"></td>
+                    <td><input type="text" class="remarks-input"></td>
+                </tr>
+                <tr class="quotation-row">
+                    <td><input type="checkbox" class="check-item"></td>
+                    <td><input type="text" class="location-input"></td>
+                    <td><input type="number" class="width-input" step="100"></td>
+                    <td><input type="number" class="height-input" step="100"></td>
+                    <td class="amount-cell"></td>
+                    <td><input type="checkbox" class="option-checkbox"></td>
+                    <td class="final-amount-cell"></td>
+                    <td><input type="text" class="remarks-input"></td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr class="total-row">
                     <td colspan="6">총 합계</td>
-                    <td id="totalFinalAmount">0원</td> <td></td>
+                    <td id="totalFinalAmount">0원</td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>
-
         <div class="completion-button-container">
             <button id="completeBtn">완료</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
