@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let width = parseFloat(widthInput.value) || 0;
                 const height = parseFloat(heightInput.value) || 0;
 
-                // **사이즈(가로)가 1000 이하면 1000으로 계산**
+                // **여기서 가로 길이가 1000 이하면 1000으로 계산하도록 수정**
                 if (width > 0 && width <= 1000) {
                     width = 1000;
                 }
@@ -185,8 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTotalSum();
         }
 
-        // 이벤트 리스너를 다시 바인딩하여 계산이 정상적으로 동작하도록 함
-        checkItem.addEventListener('change', updateAmountsAndTotal);
         locationInput.addEventListener('input', function() {
             if (this.value.trim() !== '') {
                 checkItem.checked = true;
@@ -197,9 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             updateAmountsAndTotal();
         });
-        widthInput.addEventListener('input', updateAmountsAndTotal);
-        heightInput.addEventListener('input', updateAmountsAndTotal);
-        optionCheckbox.addEventListener('change', updateAmountsAndTotal);
 
         locationInput.addEventListener('focus', function() {
             showSuggestions(this);
@@ -216,6 +211,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateAmountsAndTotal();
             }
         });
+
+        checkItem.addEventListener('change', updateAmountsAndTotal);
+        widthInput.addEventListener('input', updateAmountsAndTotal);
+        heightInput.addEventListener('input', updateAmountsAndTotal);
+        optionCheckbox.addEventListener('change', updateAmountsAndTotal);
 
         // 초기 로드 시 체크박스 상태에 따른 금액 업데이트
         updateAmountsAndTotal();
@@ -317,3 +317,174 @@ document.addEventListener('DOMContentLoaded', function() {
             const day = String(today.getDate()).padStart(2, '0');
             dateString = `${year}${month}${day}`;
         }
+
+        const customerName = customerNameInput.value.trim() || '고객이름없음';
+        const customerAddress = customerAddressInput.value.trim() || '주소없음';
+
+        return `목수방충망_${dateString}_${customerName}_${customerAddress}.${extension}`;
+    }
+
+    // JPG로 저장
+    async function saveAsJPG() {
+        const element = document.getElementById('quotationContainer');
+        try {
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const fileName = generateFileName('jpg');
+
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert('JPG 파일이 저장되었습니다.');
+        } catch (error) {
+            console.error('JPG 저장 중 오류 발생:', error);
+            alert('JPG 저장에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    // PDF로 저장
+    async function saveAsPDF() {
+        const element = document.getElementById('quotationContainer');
+        try {
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const fileName = generateFileName('pdf');
+            pdf.save(fileName);
+            alert('PDF 파일이 저장되었습니다.');
+        } catch (error) {
+            console.error('PDF 저장 중 오류 발생:', error);
+            alert('PDF 저장에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    // Excel로 저장
+    async function saveAsExcel() {
+        const customerName = customerNameInput.value.trim() || '';
+        const customerContact = customerContactInput.value.trim() || '';
+        const customerAddress = customerAddressInput.value.trim() || '';
+        const constructionDate = constructionDateInput.value.trim() || '';
+
+        const wb = XLSX.utils.book_new();
+
+        const customerInfoData = [
+            ['항목', '내용'],
+            ['시공 날짜', constructionDate],
+            ['고객 이름', customerName],
+            ['고객 연락처', customerContact],
+            ['고객 주소', customerAddress]
+        ];
+        const ws_customer = XLSX.utils.aoa_to_sheet(customerInfoData);
+        XLSX.utils.book_append_sheet(wb, ws_customer, '고객 정보');
+
+        const table = document.querySelector('.quotation-container table');
+        const ws_data = [];
+
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        ws_data.push(headers);
+
+        table.querySelectorAll('tbody tr.quotation-row').forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach((cell, index) => {
+                if (index === 0 || index === 5) {
+                    const checkbox = cell.querySelector('input[type="checkbox"]');
+                    rowData.push(checkbox ? (checkbox.checked ? '✔' : '') : '');
+                } else if (index === 1 || index === 2 || index === 3 || index === 7) {
+                    const input = cell.querySelector('input');
+                    rowData.push(input ? input.value : cell.textContent.trim());
+                } else {
+                    rowData.push(cell.textContent.trim());
+                }
+            });
+            ws_data.push(rowData);
+        });
+
+        const totalRow = table.querySelector('tfoot .total-row');
+        if (totalRow) {
+            const totalData = [];
+            totalRow.querySelectorAll('td').forEach((cell, index) => {
+                 if (index === 6) {
+                    totalData.push(cell.textContent.trim());
+                } else if (index === 0) {
+                    totalData.push(cell.textContent.trim());
+                } else {
+                    totalData.push('');
+                }
+            });
+            const fullTotalRow = new Array(headers.length).fill('');
+            fullTotalRow[0] = totalData[0];
+            fullTotalRow[6] = totalData[1];
+            ws_data.push(fullTotalRow);
+        }
+        const ws_quotation = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws_quotation, '견적 내역');
+
+        const fileName = generateFileName('xlsx');
+        XLSX.writeFile(wb, fileName);
+        alert('Excel 파일이 저장되었습니다.');
+    }
+
+    // ===========================================
+    // 초기 설정 (페이지 로드 시)
+    // ===========================================
+    loadSavedLocations();
+
+    const initialRows = quotationBody.querySelectorAll('.quotation-row');
+    initialRows.forEach(setupRow);
+
+    updateLocationNumbering();
+
+    // ===========================================
+    // 완료 버튼 및 모달 이벤트 리스너
+    // ===========================================
+    completeBtn.addEventListener('click', function() {
+        saveOptionsModal.style.display = 'flex';
+    });
+
+    closeButton.addEventListener('click', function() {
+        saveOptionsModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == saveOptionsModal) {
+            saveOptionsModal.style.display = 'none';
+        }
+    });
+
+    saveAsJpgBtn.addEventListener('click', function() {
+        saveOptionsModal.style.display = 'none';
+        saveAsJPG();
+    });
+
+    saveAsPdfBtn.addEventListener('click', function() {
+        saveOptionsModal.style.display = 'none';
+        saveAsPDF();
+    });
+
+    saveAsExcelBtn.addEventListener('click', function() {
+        saveOptionsModal.style.display = 'none';
+        saveAsExcel();
+    });
+
+});
