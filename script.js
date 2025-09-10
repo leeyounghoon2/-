@@ -3,29 +3,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const addRowBtn = document.getElementById('addRowBtn');
     const removeRowBtn = document.getElementById('removeRowBtn');
     const totalFinalAmountCell = document.getElementById('totalFinalAmount');
-
-    // 고객 정보 입력 필드 가져오기
-    const customerNameInput = document.getElementById('customerNameInput');
-    const customerContactInput = document.getElementById('customerContactInput');
-    const customerAddressInput = document.getElementById('customerAddressInput');
-    const constructionDateInput = document.getElementById('constructionDateInput');
-
-    // 완료 버튼 및 저장 옵션 모달 관련 요소 가져오기
     const completeBtn = document.getElementById('completeBtn');
-    const saveOptionsModal = document.getElementById('saveOptionsModal');
-    const closeButton = saveOptionsModal.querySelector('.close-button');
-    const saveAsJpgBtn = document.getElementById('saveAsJpgBtn');
-    const saveAsPdfBtn = document.getElementById('saveAsPdfBtn');
-    const saveAsExcelBtn = document.getElementById('saveAsExcelBtn');
 
+    // ===========================================
+    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
+    // ===========================================
+    const customerContactInput = document.querySelector('.customer-contact');
+
+    if (customerContactInput) {
+        customerContactInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
+            let formattedValue = '';
+
+            if (value.length > 11) {
+                value = value.substring(0, 11); // 11자리 초과하면 잘라냄
+            }
+
+            if (value.length < 4) {
+                formattedValue = value;
+            } else if (value.length < 8) {
+                formattedValue = value.substring(0, 3) + '-' + value.substring(3);
+            } else {
+                formattedValue = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7);
+            }
+            e.target.value = formattedValue;
+        });
+    }
 
     // ===========================================
     // 자동 완성 (Autocomplete) 관련 변수 및 함수
+    // (이전 코드와 동일)
     // ===========================================
-    let savedLocations = new Set(); // 고유한 시공위치 목록 저장
-    const LOCAL_STORAGE_KEY = 'saved_quotation_locations'; // 로컬 스토리지 키
+    let savedLocations = new Set();
+    const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
 
-    // 로컬 스토리지에서 저장된 위치 목록 불러오기
     function loadSavedLocations() {
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (stored) {
@@ -33,12 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 로컬 스토리지에 위치 목록 저장하기
     function saveLocations() {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(savedLocations)));
     }
 
-    // 새 위치를 저장 목록에 추가하고 저장하기
     function addLocationToSaved(location) {
         const trimmedLocation = location.trim();
         if (trimmedLocation && !savedLocations.has(trimmedLocation)) {
@@ -47,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 자동 완성 제안 목록 표시
     function showSuggestions(inputElement) {
         const searchTerm = inputElement.value.trim().toLowerCase();
         const parentTd = inputElement.closest('td');
@@ -85,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 자동 완성 제안 목록 숨기기
     function hideSuggestions(inputElement) {
         const parentTd = inputElement.closest('td');
         const suggestionBox = parentTd.querySelector('.suggestions');
@@ -98,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 시공위치 자동 번호 매기기
+    // (이전 코드와 동일)
     // ===========================================
     function updateLocationNumbering() {
         const locationInputs = quotationBody.querySelectorAll('.location-input');
@@ -108,11 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fullValue === '') return;
 
             const baseName = fullValue.replace(/( \d+-\d+|\s?\d+)$/, '').trim();
-
             addLocationToSaved(baseName || fullValue);
 
             const effectiveBaseName = baseName || fullValue;
-
             if (!baseLocationOccurrences.has(effectiveBaseName)) {
                 baseLocationOccurrences.set(effectiveBaseName, []);
             }
@@ -145,35 +151,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===========================================
-    // 각 행에 대한 기능 설정 (금액 계산, 이벤트 리스너 등)
+    // 각 행에 대한 기능 설정 (최종금액 계산, 이벤트 리스너 등)
     // ===========================================
     function setupRow(row) {
         const checkItem = row.querySelector('.check-item');
         const locationInput = row.querySelector('.location-input');
         const widthInput = row.querySelector('.width-input');
         const heightInput = row.querySelector('.height-input');
-        const amountCell = row.querySelector('.amount-cell');
         const optionCheckbox = row.querySelector('.option-checkbox');
         const finalAmountCell = row.querySelector('.final-amount-cell');
 
-        function updateAmountsAndTotal() {
+        function updateFinalAmount() {
             let baseAmount = 0;
+            const width = parseFloat(widthInput.value) || 0;
+            const height = parseFloat(heightInput.value) || 0;
 
-            if (checkItem.checked) {
-                let width = parseFloat(widthInput.value) || 0;
-                const height = parseFloat(heightInput.value) || 0;
-
-                // **여기서 가로 길이가 1000 이하면 1000으로 계산하도록 수정**
-                if (width > 0 && width <= 1000) {
-                    width = 1000;
-                }
-
-                if (width > 0 || height > 0) {
+            if (checkItem.checked && (width > 0 || height > 0)) {
+                // 수정된 로직: 가로 사이즈(width)가 1000 이하면 25000원으로 고정
+                if (width <= 1000) {
+                    baseAmount = 25000;
+                } else {
                     baseAmount = Math.max(width, height) / 1000 * 25000;
                 }
-                amountCell.textContent = baseAmount.toLocaleString('ko-KR') + '원';
             } else {
-                amountCell.textContent = '';
+                baseAmount = 0;
             }
 
             let finalAmount = baseAmount;
@@ -193,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkItem.checked = false;
                 hideSuggestions(this);
             }
-            updateAmountsAndTotal();
         });
 
         locationInput.addEventListener('focus', function() {
@@ -208,27 +208,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateLocationNumbering();
             } else {
                 checkItem.checked = false;
-                updateAmountsAndTotal();
+                updateFinalAmount();
             }
         });
 
-        checkItem.addEventListener('change', updateAmountsAndTotal);
-        widthInput.addEventListener('input', updateAmountsAndTotal);
-        heightInput.addEventListener('input', updateAmountsAndTotal);
-        optionCheckbox.addEventListener('change', updateAmountsAndTotal);
+        checkItem.addEventListener('change', updateFinalAmount);
+        widthInput.addEventListener('input', updateFinalAmount);
+        heightInput.addEventListener('input', updateFinalAmount);
+        optionCheckbox.addEventListener('change', updateFinalAmount);
 
-        // 초기 로드 시 체크박스 상태에 따른 금액 업데이트
-        updateAmountsAndTotal();
-
-        // 위치 입력 필드에 값이 있으면 초기 체크박스를 체크 상태로
         if (locationInput.value.trim() !== '') {
             checkItem.checked = true;
-            updateAmountsAndTotal();
         }
+        updateFinalAmount();
     }
 
     // ===========================================
     // 총 합계 계산 및 업데이트 함수
+    // (이전 코드와 동일)
     // ===========================================
     function updateTotalSum() {
         let totalSum = 0;
@@ -245,9 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 행 추가/제거 기능
+    // (이전 코드와 동일)
     // ===========================================
-
-    // 행 추가 버튼 클릭 이벤트
     addRowBtn.addEventListener('click', function() {
         const newRow = document.createElement('tr');
         newRow.className = 'quotation-row';
@@ -256,235 +252,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const td2 = document.createElement('td'); const input2 = document.createElement('input'); input2.type = 'text'; input2.className = 'location-input'; td2.appendChild(input2); newRow.appendChild(td2);
         const td3 = document.createElement('td'); const input3 = document.createElement('input'); input3.type = 'number'; input3.className = 'width-input'; input3.step = '100'; td3.appendChild(input3); newRow.appendChild(td3);
         const td4 = document.createElement('td'); const input4 = document.createElement('input'); input4.type = 'number'; input4.className = 'height-input'; input4.step = '100'; td4.appendChild(input4); newRow.appendChild(td4);
-        const td5 = document.createElement('td'); td5.className = 'amount-cell'; td5.textContent = ''; newRow.appendChild(td5);
         const td6 = document.createElement('td'); const input6 = document.createElement('input'); input6.type = 'checkbox'; input6.className = 'option-checkbox'; td6.appendChild(input6); newRow.appendChild(td6);
         const td7 = document.createElement('td'); td7.className = 'final-amount-cell'; td7.textContent = ''; newRow.appendChild(td7);
-        const td8 = document.createElement('td'); const input8 = document.createElement('input'); input8.type = 'text'; input8.className = 'remarks-input'; td8.appendChild(input8); newRow.appendChild(td8);
-
-        quotationBody.appendChild(newRow);
-        setupRow(newRow); // 새로 추가된 행에 이벤트 리스너 설정
-        updateLocationNumbering(); // 행 추가 후 번호 재매김
-    });
-
-    // 행 제거 버튼 클릭 이벤트
-    removeRowBtn.addEventListener('click', function() {
-        const allRows = quotationBody.querySelectorAll('.quotation-row');
-        const checkedCheckboxes = quotationBody.querySelectorAll('.check-item:checked');
-        let rowsToDelete = [];
-
-        if (checkedCheckboxes.length > 0) {
-            checkedCheckboxes.forEach(checkbox => {
-                const row = checkbox.closest('tr.quotation-row');
-                if (row) {
-                    rowsToDelete.push(row);
-                }
-            });
-        } else {
-            if (allRows.length > 0) {
-                rowsToDelete.push(allRows[allRows.length - 1]);
-            }
-        }
-
-        if (allRows.length - rowsToDelete.length < 1) { // 최소 1개 행은 유지
-            alert('더 이상 행을 제거할 수 없습니다. 최소 한 개의 행은 유지됩니다.');
-            return;
-        }
-
-        rowsToDelete.forEach(row => {
-            if (row.parentNode) {
-                row.parentNode.removeChild(row);
-            }
-        });
-
-        updateLocationNumbering(); // 행 제거 후 번호 재매김
-    });
-
-    // ===========================================
-    // 파일 저장 기능
-    // ===========================================
-
-    // 파일 이름 생성 함수
-    function generateFileName(extension) {
-        let dateString;
-        const constructionDateValue = constructionDateInput.value.trim();
-
-        if (constructionDateValue) {
-            dateString = constructionDateValue.replace(/-/g, '');
-        } else {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            dateString = `${year}${month}${day}`;
-        }
-
-        const customerName = customerNameInput.value.trim() || '고객이름없음';
-        const customerAddress = customerAddressInput.value.trim() || '주소없음';
-
-        return `목수방충망_${dateString}_${customerName}_${customerAddress}.${extension}`;
-    }
-
-    // JPG로 저장
-    async function saveAsJPG() {
-        const element = document.getElementById('quotationContainer');
-        try {
-            const canvas = await html2canvas(element, { scale: 2 });
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-            const fileName = generateFileName('jpg');
-
-            const link = document.createElement('a');
-            link.href = imgData;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            alert('JPG 파일이 저장되었습니다.');
-        } catch (error) {
-            console.error('JPG 저장 중 오류 발생:', error);
-            alert('JPG 저장에 실패했습니다. 다시 시도해주세요.');
-        }
-    }
-
-    // PDF로 저장
-    async function saveAsPDF() {
-        const element = document.getElementById('quotationContainer');
-        try {
-            const canvas = await html2canvas(element, { scale: 2 });
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-
-            const fileName = generateFileName('pdf');
-            pdf.save(fileName);
-            alert('PDF 파일이 저장되었습니다.');
-        } catch (error) {
-            console.error('PDF 저장 중 오류 발생:', error);
-            alert('PDF 저장에 실패했습니다. 다시 시도해주세요.');
-        }
-    }
-
-    // Excel로 저장
-    async function saveAsExcel() {
-        const customerName = customerNameInput.value.trim() || '';
-        const customerContact = customerContactInput.value.trim() || '';
-        const customerAddress = customerAddressInput.value.trim() || '';
-        const constructionDate = constructionDateInput.value.trim() || '';
-
-        const wb = XLSX.utils.book_new();
-
-        const customerInfoData = [
-            ['항목', '내용'],
-            ['시공 날짜', constructionDate],
-            ['고객 이름', customerName],
-            ['고객 연락처', customerContact],
-            ['고객 주소', customerAddress]
-        ];
-        const ws_customer = XLSX.utils.aoa_to_sheet(customerInfoData);
-        XLSX.utils.book_append_sheet(wb, ws_customer, '고객 정보');
-
-        const table = document.querySelector('.quotation-container table');
-        const ws_data = [];
-
-        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
-        ws_data.push(headers);
-
-        table.querySelectorAll('tbody tr.quotation-row').forEach(row => {
-            const rowData = [];
-            row.querySelectorAll('td').forEach((cell, index) => {
-                if (index === 0 || index === 5) {
-                    const checkbox = cell.querySelector('input[type="checkbox"]');
-                    rowData.push(checkbox ? (checkbox.checked ? '✔' : '') : '');
-                } else if (index === 1 || index === 2 || index === 3 || index === 7) {
-                    const input = cell.querySelector('input');
-                    rowData.push(input ? input.value : cell.textContent.trim());
-                } else {
-                    rowData.push(cell.textContent.trim());
-                }
-            });
-            ws_data.push(rowData);
-        });
-
-        const totalRow = table.querySelector('tfoot .total-row');
-        if (totalRow) {
-            const totalData = [];
-            totalRow.querySelectorAll('td').forEach((cell, index) => {
-                 if (index === 6) {
-                    totalData.push(cell.textContent.trim());
-                } else if (index === 0) {
-                    totalData.push(cell.textContent.trim());
-                } else {
-                    totalData.push('');
-                }
-            });
-            const fullTotalRow = new Array(headers.length).fill('');
-            fullTotalRow[0] = totalData[0];
-            fullTotalRow[6] = totalData[1];
-            ws_data.push(fullTotalRow);
-        }
-        const ws_quotation = XLSX.utils.aoa_to_sheet(ws_data);
-        XLSX.utils.book_append_sheet(wb, ws_quotation, '견적 내역');
-
-        const fileName = generateFileName('xlsx');
-        XLSX.writeFile(wb, fileName);
-        alert('Excel 파일이 저장되었습니다.');
-    }
-
-    // ===========================================
-    // 초기 설정 (페이지 로드 시)
-    // ===========================================
-    loadSavedLocations();
-
-    const initialRows = quotationBody.querySelectorAll('.quotation-row');
-    initialRows.forEach(setupRow);
-
-    updateLocationNumbering();
-
-    // ===========================================
-    // 완료 버튼 및 모달 이벤트 리스너
-    // ===========================================
-    completeBtn.addEventListener('click', function() {
-        saveOptionsModal.style.display = 'flex';
-    });
-
-    closeButton.addEventListener('click', function() {
-        saveOptionsModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target == saveOptionsModal) {
-            saveOptionsModal.style.display = 'none';
-        }
-    });
-
-    saveAsJpgBtn.addEventListener('click', function() {
-        saveOptionsModal.style.display = 'none';
-        saveAsJPG();
-    });
-
-    saveAsPdfBtn.addEventListener('click', function() {
-        saveOptionsModal.style.display = 'none';
-        saveAsPDF();
-    });
-
-    saveAsExcelBtn.addEventListener('click', function() {
-        saveOptionsModal.style.display = 'none';
-        saveAsExcel();
-    });
-
-});
+        const td8 = document.createElement('td'); const input8 = document.createElement('input'); input8.type = 'text'; input8.className = 'remarks-input'; td8.appendChild(input8); newRow.appendChild(
