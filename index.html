@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>웹 견적서 프로그램</title>
     <link rel="stylesheet" href="style.css">
-</head>
+    </head>
 <body>
     <div class="quotation-container">
         <h1>목수방충망_견적서</h1>
@@ -38,7 +38,6 @@
                     <th>시공위치</th>
                     <th>사이즈(가로)</th>
                     <th>사이즈(세로)</th>
-                    <th>금액</th>
                     <th>추가옵션</th>
                     <th>최종금액</th>
                     <th>비고</th>
@@ -50,7 +49,6 @@
                     <td><input type="text" class="location-input"></td>
                     <td><input type="number" class="width-input" step="100"></td>
                     <td><input type="number" class="height-input" step="100"></td>
-                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
                     <td class="final-amount-cell"></td>
                     <td><input type="text" class="remarks-input"></td>
@@ -60,7 +58,6 @@
                     <td><input type="text" class="location-input"></td>
                     <td><input type="number" class="width-input" step="100"></td>
                     <td><input type="number" class="height-input" step="100"></td>
-                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
                     <td class="final-amount-cell"></td>
                     <td><input type="text" class="remarks-input"></td>
@@ -70,7 +67,6 @@
                     <td><input type="text" class="location-input"></td>
                     <td><input type="number" class="width-input" step="100"></td>
                     <td><input type="number" class="height-input" step="100"></td>
-                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
                     <td class="final-amount-cell"></td>
                     <td><input type="text" class="remarks-input"></td>
@@ -80,7 +76,6 @@
                     <td><input type="text" class="location-input"></td>
                     <td><input type="number" class="width-input" step="100"></td>
                     <td><input type="number" class="height-input" step="100"></td>
-                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
                     <td class="final-amount-cell"></td>
                     <td><input type="text" class="remarks-input"></td>
@@ -90,7 +85,6 @@
                     <td><input type="text" class="location-input"></td>
                     <td><input type="number" class="width-input" step="100"></td>
                     <td><input type="number" class="height-input" step="100"></td>
-                    <td class="amount-cell"></td>
                     <td><input type="checkbox" class="option-checkbox"></td>
                     <td class="final-amount-cell"></td>
                     <td><input type="text" class="remarks-input"></td>
@@ -98,8 +92,7 @@
             </tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td colspan="6">총 합계</td>
-                    <td id="totalFinalAmount">0원</td>
+                    <td colspan="5">총 합계</td> <td id="totalFinalAmount">0원</td>
                     <td></td>
                 </tr>
             </tfoot>
@@ -111,5 +104,6 @@
 
     <script src="script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</body>
+
+    </body>
 </html>
