@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Roboto', sans-serif;
     margin: 0;
     background-color: #f4f4f4;
     padding: 20px;
@@ -100,7 +102,7 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
-    min-width: 900px;
+    min-width: 1000px;
 }
 
 th, td {
@@ -124,35 +126,35 @@ td:nth-child(1) {
     width: 5%;
     min-width: 40px;
 }
-th:nth-child(2), /* 시공위치 */
+th:nth-child(2),
 td:nth-child(2) {
-    width: 12%;
+    width: 16%;
+    min-width: 150px;
+}
+th:nth-child(3),
+td:nth-child(3) {
+    width: 10%;
+    min-width: 80px;
+}
+th:nth-child(4),
+td:nth-child(4) {
+    width: 10%;
+    min-width: 80px;
+}
+th:nth-child(5),
+td:nth-child(5) {
+    width: 10%;
     min-width: 90px;
 }
-th:nth-child(3), /* 사이즈(가로) */
-td:nth-child(3) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(4), /* 사이즈(세로) */
-td:nth-child(4) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(5), /* 추가옵션 */
-td:nth-child(5) {
-    width: 8%;
-    min-width: 70px;
-}
-th:nth-child(6), /* 최종금액 */
+th:nth-child(6),
 td:nth-child(6) {
     width: 15%;
     min-width: 120px;
 }
-th:nth-child(7), /* 비고 */
+th:nth-child(7),
 td:nth-child(7) {
     width: 20%;
-    min-width: 160px;
+    min-width: 180px;
 }
 
 input[type="text"],
@@ -343,136 +345,4 @@ tfoot .total-row td {
     }
     th:nth-child(5),
     td:nth-child(5) {
-        min-width: 50px;
-    }
-    th:nth-child(6),
-    td:nth-child(6) {
-        min-width: 100px;
-    }
-    th:nth-child(7),
-    td:nth-child(7) {
-        min-width: 120px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-        width: 90%;
-        padding: 4px;
-        font-size: 0.85em;
-    }
-
-    input[type="checkbox"] {
-        transform: scale(1.4);
-    }
-
-    tfoot .total-row td {
-        font-size: 0.9em;
-    }
-
-    .suggestions {
-        width: calc(100% - 2px);
-    }
-
-    .completion-button-container #completeBtn {
-        padding: 10px 20px;
-        font-size: 1.1em;
-    }
-
-    body.capture-mode input::placeholder {
-        color: transparent;
-    }
-}
-
-
-/* ================================================= */
-/* 이미지 캡처 모드에서만 적용될 스타일 (PC 및 모바일 공통) */
-body.capture-mode {
-    background-color: #ffffff !important;
-}
-
-body.capture-mode .quotation-container {
-    padding: 20px;
-    box-shadow: none !important;
-    border: none !important;
-    border-radius: 0 !important;
-    min-width: 1100px !important;
-    overflow-x: hidden !important;
-    padding-bottom: 50px !important;
-}
-
-body.capture-mode h1 {
-    font-size: 2em !important;
-}
-
-body.capture-mode .customer-info table {
-    font-size: 0.9em !important;
-}
-
-/* 고객 정보 테이블 글자 줄바꿈 방지 */
-body.capture-mode .customer-info th,
-body.capture-mode .customer-info td {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-}
-
-body.capture-mode .customer-info input[type="date"],
-body.capture-mode .customer-info input[type="text"] {
-    width: 100% !important;
-    padding: 5px !important;
-    font-size: 0.85em !important;
-    text-align: center !important;
-}
-
-body.capture-mode table {
-    font-size: 0.85em !important;
-    min-width: 1000px !important;
-}
-
-body.capture-mode th, body.capture-mode td {
-    padding: 5px !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    text-align: center !important;
-}
-
-/* 추가 옵션과 최종 금액 열의 너비를 캡처 시 고정 (글자 잘림 방지) */
-body.capture-mode th:nth-child(5),
-body.capture-mode td:nth-child(5) {
-    min-width: 80px !important;
-    width: 80px !important;
-}
-body.capture-mode th:nth-child(6),
-body.capture-mode td:nth-child(6) {
-    min-width: 120px !important;
-    width: 120px !important;
-}
-body.capture-mode th:nth-child(7), /* 비고 */
-body.capture-mode td:nth-child(7) {
-    min-width: 180px !important;
-    width: 180px !important;
-}
-
-body.capture-mode input[type="text"],
-body.capture-mode input[type="number"] {
-    font-size: 0.8em !important;
-    width: 100% !important;
-    padding: 3px !important;
-    text-align: center !important;
-}
-
-body.capture-mode input[type="checkbox"] {
-    transform: scale(1) !important;
-}
-
-body.capture-mode .action-buttons,
-body.capture-mode .completion-button-container {
-    display: none !important;
-}
-
-body.capture-mode input::placeholder {
-    color: transparent;
-}
-
-body.capture-mode .suggestions {
-    display: none !important;
-}
+        min-width: 50px
