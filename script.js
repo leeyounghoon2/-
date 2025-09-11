@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (customerContactInput) {
         customerContactInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
+            let value = e.target.value.replace(/[^0-9]/g, '');
             let formattedValue = '';
 
             if (value.length > 11) {
-                value = value.substring(0, 11); // 11자리 초과하면 잘라냄
+                value = value.substring(0, 11);
             }
 
             if (value.length < 4) {
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (optionCheckbox.checked) {
                 finalAmount += 15000;
             }
-            finalAmountCell.textContent = finalAmount.toLocaleString('ko-KR') + '원';
+            finalAmountCell.textContent = Math.round(finalAmount).toLocaleString('ko-KR') + '원';
 
             updateTotalSum();
         }
@@ -287,26 +287,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===========================================
-    // 완료 버튼 (JPG 저장) 기능 강화 - 수정된 부분
+    // 완료 버튼 (JPG 저장) 기능
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
         const originalOverflowX = quotationContainer.style.overflowX;
-        const originalMinWidth = quotationContainer.style.minWidth; // 원래 min-width 값 저장
+        const originalMinWidth = quotationContainer.style.minWidth;
 
-        // 캡처 전에 임시로 CSS 조정
-        document.body.classList.add('capture-mode');
-        quotationContainer.style.minWidth = '800px'; // 캡처 시 최소 너비 확장
-        quotationContainer.style.overflowX = 'visible';
-
-        const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
-        customerInputs.forEach(input => {
-            if (input.value.trim() === '') {
-                input.setAttribute('data-placeholder-text', input.placeholder || '');
-                input.placeholder = '';
-            }
-        });
-
+        // 저장 시, 평상시 화면을 그대로 캡처합니다.
+        // 별도의 캡처 모드 CSS 클래스를 추가하지 않습니다.
+        
         const captureWidth = quotationContainer.offsetWidth;
         const scale = 3;
 
@@ -318,7 +308,8 @@ document.addEventListener('DOMContentLoaded', function() {
             useCORS: true,
             logging: true,
             allowTaint: true,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            foreignObjectRendering: true // 글자 깨짐 방지
         }).then(canvas => {
             const image = canvas.toDataURL('image/jpeg', 0.9);
 
@@ -342,19 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }).catch(error => {
             console.error('이미지 저장 중 오류 발생:', error);
             alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
-        }).finally(() => {
-            // 캡처 후 원래 CSS 상태로 복원
-            document.body.classList.remove('capture-mode');
-            quotationContainer.style.overflowX = originalOverflowX;
-            quotationContainer.style.minWidth = originalMinWidth;
-
-            customerInputs.forEach(input => {
-                const originalPlaceholder = input.getAttribute('data-placeholder-text');
-                if (originalPlaceholder !== null) {
-                    input.placeholder = originalPlaceholder;
-                    input.removeAttribute('data-placeholder-text');
-                }
-            });
         });
     });
 
