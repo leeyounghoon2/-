@@ -1,478 +1,225 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
     margin: 0;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-sizing: border-box;
+    line-height: 1.6;
 }
 
 .quotation-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    min-width: 600px;
+    position: relative;
     overflow-x: auto;
 }
 
-h1 {
+.quotation-header {
     text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.quotation-header h1 {
+    font-size: 28px;
     color: #333;
-    margin-bottom: 20px;
+    margin: 0;
 }
 
-/* 고객 정보 섹션 스타일 */
-.customer-info table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 0.9em;
-    min-width: unset;
-}
-
-.customer-info th,
-.customer-info td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    white-space: normal;
-}
-
-.customer-info th {
-    background-color: #f2f2f2;
-    color: #555;
-    font-weight: bold;
-    width: 15%;
-}
-
-.customer-info td {
-    width: 18.33%;
-}
-
-.customer-info input[type="date"],
-.customer-info input[type="text"] {
-    width: calc(100% - 16px);
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 0.9em;
-}
-
-.customer-info tr:last-child th,
-.customer-info tr:last-child td {
-    width: auto;
-}
-
-.action-buttons {
+.company-info {
     text-align: right;
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
 }
 
-.action-buttons button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    margin-left: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.action-buttons button:hover {
-    background-color: #45a049;
-}
-
-.action-buttons button#removeRowBtn {
-    background-color: #f44336;
-}
-
-.action-buttons button#removeRowBtn:hover {
-    background-color: #da190b;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.9em;
-    min-width: 900px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    position: relative;
-    white-space: normal;
-}
-
-th {
-    background-color: #f2f2f2;
-    color: #555;
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* 개별 열 너비 조정 (PC) */
-th:nth-child(1),
-td:nth-child(1) {
-    width: 5%;
-    min-width: 40px;
-}
-th:nth-child(2), /* 시공위치 */
-td:nth-child(2) {
-    width: 12%;
-    min-width: 90px;
-}
-th:nth-child(3), /* 사이즈(가로) */
-td:nth-child(3) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(4), /* 사이즈(세로) */
-td:nth-child(4) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(5), /* 추가옵션 */
-td:nth-child(5) {
-    width: 8%;
-    min-width: 70px;
-}
-th:nth-child(6), /* 최종금액 */
-td:nth-child(6) {
-    width: 15%;
-    min-width: 120px;
-}
-th:nth-child(7), /* 비고 */
-td:nth-child(7) {
-    width: 20%;
-    min-width: 160px;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: calc(100% - 16px);
-    padding: 8px;
+.customer-info {
     border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    text-align: center;
-    white-space: normal;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #fcfcfc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-input.remarks-input {
-    width: calc(100% - 16px);
+.customer-info dl {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    flex-basis: 48%;
+}
+
+.customer-info dt {
+    font-weight: bold;
+    color: #444;
     min-width: 80px;
 }
 
-input[type="checkbox"] {
-    transform: scale(1.2);
+.customer-info dd {
     margin: 0;
+    flex-grow: 1;
+}
+
+.customer-info input {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.quotation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.quotation-table thead th {
+    background-color: #e9ecef;
+    padding: 12px 8px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.quotation-table tbody td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
     vertical-align: middle;
 }
 
-tfoot .total-row {
+.quotation-table input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 4px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.quotation-table .location-input, .quotation-table .remarks-input {
+    text-align: left;
+}
+
+.quotation-table .final-amount-cell {
     font-weight: bold;
-    background-color: #e0f2f7;
+    text-align: right;
+    padding-right: 12px;
 }
 
-tfoot .total-row td {
-    border-top: 2px solid #aaa;
+.total-amount {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    padding-right: 12px;
+    padding-top: 10px;
+    border-top: 2px solid #333;
 }
 
-/* 총 합계 셀 너비 조정 */
-#totalFinalAmount {
-    width: 15%;
-    min-width: 120px;
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-/* 자동 완성 제안 목록 스타일 */
+.button-group button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#addRowBtn {
+    background-color: #28a745;
+    color: white;
+}
+
+#addRowBtn:hover {
+    background-color: #218838;
+}
+
+#removeRowBtn {
+    background-color: #dc3545;
+    color: white;
+}
+
+#removeRowBtn:hover {
+    background-color: #c82333;
+}
+
+#completeBtn {
+    background-color: #007bff;
+    color: white;
+}
+
+#completeBtn:hover {
+    background-color: #0069d9;
+}
+
+/* ===========================================
+   자동 완성 기능 스타일
+   =========================================== */
 .suggestions {
     position: absolute;
-    border: 1px solid #ccc;
-    background-color: #fff;
+    z-index: 10;
     max-height: 150px;
     overflow-y: auto;
-    z-index: 100;
-    width: calc(100% - 2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: none;
-    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     top: 100%;
+    left: 0;
 }
 
 .suggestion-item {
-    padding: 8px;
+    padding: 8px 12px;
     cursor: pointer;
-    text-align: left;
+    transition: background-color 0.2s;
 }
 
 .suggestion-item:hover {
     background-color: #f0f0f0;
 }
 
-/* 완료 버튼 스타일 */
-.completion-button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-#completeBtn {
-    background-color: #007bff;
-    color: white;
+/* ===========================================
+   이미지 저장 모드 (캡처 시) 스타일
+   =========================================== */
+body.capture-mode .quotation-table input {
     border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    background-color: transparent;
+    padding: 0;
+    text-align: center;
 }
 
-#completeBtn:hover {
-    background-color: #0056b3;
+body.capture-mode .quotation-table input.location-input {
+    text-align: left;
 }
 
-
-/* ================================================= */
-/* 스마트폰 화면을 위한 반응형 CSS */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .quotation-container {
-        padding: 10px;
-        border-radius: 0;
-        box-shadow: none;
-        margin: 0;
-        width: 100%;
-        min-width: unset;
-    }
-
-    h1 {
-        font-size: 1.8em;
-        margin-bottom: 15px;
-    }
-
-    .customer-info table {
-        display: block;
-        width: 100%;
-    }
-
-    .customer-info tr {
-        display: flex;
-        flex-wrap: wrap;
-        border: 1px solid #ddd;
-        margin-bottom: 5px;
-    }
-
-    .customer-info th,
-    .customer-info td {
-        border: none;
-        width: 50%;
-        box-sizing: border-box;
-        padding: 5px;
-        white-space: normal;
-    }
-
-    .customer-info th:first-child,
-    .customer-info td:nth-child(odd) {
-        width: 35%;
-        text-align: left;
-    }
-
-    .customer-info td:nth-child(even),
-    .customer-info tr:last-child td {
-        width: 65%;
-        text-align: left;
-    }
-
-    .customer-info input[type="date"],
-    .customer-info input[type="text"] {
-        width: calc(100% - 10px);
-        font-size: 0.85em;
-        padding: 5px;
-    }
-
-    .action-buttons {
-        text-align: center;
-    }
-
-    .action-buttons button {
-        padding: 6px 12px;
-        font-size: 1em;
-        margin: 0 3px;
-    }
-
-    table {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        min-width: 650px;
-        font-size: 0.8em;
-    }
-
-    th, td {
-        padding: 5px 3px;
-        min-width: 60px;
-        white-space: nowrap;
-    }
-
-    th:nth-child(1),
-    td:nth-child(1) {
-        min-width: 40px;
-    }
-    th:nth-child(2),
-    td:nth-child(2) {
-        min-width: 100px;
-    }
-    th:nth-child(3),
-    td:nth-child(3) {
-        min-width: 80px;
-    }
-    th:nth-child(4),
-    td:nth-child(4) {
-        min-width: 80px;
-    }
-    th:nth-child(5),
-    td:nth-child(5) {
-        min-width: 50px;
-    }
-    th:nth-child(6),
-    td:nth-child(6) {
-        min-width: 100px;
-    }
-    th:nth-child(7),
-    td:nth-child(7) {
-        min-width: 120px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-        width: 90%;
-        padding: 4px;
-        font-size: 0.85em;
-    }
-
-    input[type="checkbox"] {
-        transform: scale(1.4);
-    }
-
-    tfoot .total-row td {
-        font-size: 0.9em;
-    }
-
-    .suggestions {
-        width: calc(100% - 2px);
-    }
-
-    .completion-button-container #completeBtn {
-        padding: 10px 20px;
-        font-size: 1.1em;
-    }
-
-    body.capture-mode input::placeholder {
-        color: transparent;
-    }
+body.capture-mode .quotation-table input.remarks-input {
+    text-align: left;
 }
 
-
-/* ================================================= */
-/* 이미지 캡처 모드에서만 적용될 스타일 (PC 및 모바일 공통) */
-body.capture-mode {
-    background-color: #ffffff !important;
+body.capture-mode .quotation-table input[type="checkbox"] {
+    display: none;
 }
 
-body.capture-mode .quotation-container {
-    padding: 20px;
-    box-shadow: none !important;
-    border: none !important;
-    border-radius: 0 !important;
-    min-width: 1100px !important;
-    overflow-x: hidden !important;
-    padding-bottom: 50px !important;
-}
-
-body.capture-mode h1 {
-    font-size: 2em !important;
-}
-
-body.capture-mode .customer-info table {
-    font-size: 0.9em !important;
-}
-
-/* 고객 정보 테이블 글자 줄바꿈 방지 */
-body.capture-mode .customer-info th,
-body.capture-mode .customer-info td {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-}
-
-body.capture-mode .customer-info input[type="date"],
-body.capture-mode .customer-info input[type="text"] {
-    width: 100% !important;
-    padding: 5px !important;
-    font-size: 0.85em !important;
-    text-align: center !important;
-}
-
-body.capture-mode table {
-    font-size: 0.85em !important;
-    min-width: 1000px !important;
-}
-
-body.capture-mode th, body.capture-mode td {
-    padding: 5px !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    text-align: center !important;
-}
-
-/* 추가 옵션과 최종 금액 열의 너비를 캡처 시 고정 (글자 잘림 방지) */
-body.capture-mode th:nth-child(5),
-body.capture-mode td:nth-child(5) {
-    min-width: 80px !important;
-    width: 80px !important;
-}
-body.capture-mode th:nth-child(6),
-body.capture-mode td:nth-child(6) {
-    min-width: 120px !important;
-    width: 120px !important;
-}
-body.capture-mode th:nth-child(7), /* 비고 */
-body.capture-mode td:nth-child(7) {
-    min-width: 180px !important;
-    width: 180px !important;
-}
-
-body.capture-mode input[type="text"],
-body.capture-mode input[type="number"] {
-    font-size: 0.8em !important;
-    width: 100% !important;
-    padding: 3px !important;
-    text-align: center !important;
-}
-
-body.capture-mode input[type="checkbox"] {
-    transform: scale(1) !important;
-}
-
-body.capture-mode .action-buttons,
-body.capture-mode .completion-button-container {
-    display: none !important;
-}
-
-body.capture-mode input::placeholder {
-    color: transparent;
-}
-
-body.capture-mode .suggestions {
-    display: none !important;
+body.capture-mode .button-group {
+    display: none;
 }
