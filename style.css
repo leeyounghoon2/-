@@ -11,9 +11,9 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 1200px; /* 최대 너비 증가 */
+    max-width: 1200px;
     margin: 0 auto;
-    overflow-x: auto; /* 테이블이 너무 넓을 때 스크롤 가능하도록 */
+    overflow-x: auto;
 }
 
 h1 {
@@ -100,7 +100,7 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
-    min-width: 900px; /* 데스크톱에서 테이블 최소 너비 유지 */
+    min-width: 900px;
 }
 
 th, td {
@@ -126,17 +126,17 @@ td:nth-child(1) {
 }
 th:nth-child(2), /* 시공위치 */
 td:nth-child(2) {
-    width: 12%; /* 너비 축소 */
+    width: 12%;
     min-width: 90px;
 }
 th:nth-child(3), /* 사이즈(가로) */
 td:nth-child(3) {
-    width: 8%; /* 너비 축소 */
+    width: 8%;
     min-width: 60px;
 }
 th:nth-child(4), /* 사이즈(세로) */
 td:nth-child(4) {
-    width: 8%; /* 너비 축소 */
+    width: 8%;
     min-width: 60px;
 }
 th:nth-child(5), /* 추가옵션 */
@@ -146,15 +146,14 @@ td:nth-child(5) {
 }
 th:nth-child(6), /* 최종금액 */
 td:nth-child(6) {
-    width: 15%; /* 너비 증가 */
+    width: 15%;
     min-width: 120px;
 }
 th:nth-child(7), /* 비고 */
 td:nth-child(7) {
-    width: 20%; /* 너비 증가 */
+    width: 20%;
     min-width: 160px;
 }
-
 
 input[type="text"],
 input[type="number"] {
@@ -406,16 +405,14 @@ body.capture-mode h1 {
 
 body.capture-mode .customer-info table {
     font-size: 0.9em !important;
-    white-space: normal !important;
-    word-break: break-all !important;
 }
 
+/* 고객 정보 테이블 글자 줄바꿈 방지 */
 body.capture-mode .customer-info th,
 body.capture-mode .customer-info td {
-    white-space: normal !important;
-    word-break: break-all !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
 }
-
 
 body.capture-mode .customer-info input[type="date"],
 body.capture-mode .customer-info input[type="text"] {
@@ -430,3 +427,48 @@ body.capture-mode table {
 }
 
 body.capture-mode th, body.capture-mode td {
+    padding: 5px !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+}
+
+/* 추가 옵션과 최종 금액 열의 너비를 캡처 시 고정 (글자 잘림 방지) */
+body.capture-mode th:nth-child(5),
+body.capture-mode td:nth-child(5) {
+    min-width: 80px !important;
+    width: 80px !important;
+}
+body.capture-mode th:nth-child(6),
+body.capture-mode td:nth-child(6) {
+    min-width: 120px !important;
+    width: 120px !important;
+}
+body.capture-mode th:nth-child(7), /* 비고 */
+body.capture-mode td:nth-child(7) {
+    min-width: 180px !important;
+    width: 180px !important;
+}
+
+body.capture-mode input[type="text"],
+body.capture-mode input[type="number"] {
+    font-size: 0.8em !important;
+    width: 100% !important;
+    padding: 3px !important;
+}
+
+body.capture-mode input[type="checkbox"] {
+    transform: scale(1) !important;
+}
+
+body.capture-mode .action-buttons,
+body.capture-mode .completion-button-container {
+    display: none !important;
+}
+
+body.capture-mode input::placeholder {
+    color: transparent;
+}
+
+body.capture-mode .suggestions {
+    display: none !important;
+}
