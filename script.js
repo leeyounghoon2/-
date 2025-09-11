@@ -37,37 +37,4 @@ document.addEventListener('DOMContentLoaded', function() {
     const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
 
     function loadSavedLocations() {
-        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (stored) {
-            try {
-                savedLocations = new Set(JSON.parse(stored));
-            } catch (e) {
-                console.error("Failed to parse saved locations from localStorage.", e);
-                savedLocations = new Set();
-            }
-        }
-    }
-
-    function saveLocations() {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(savedLocations)));
-        } catch (e) {
-            console.error("Failed to save locations to localStorage.", e);
-        }
-    }
-
-    function addLocationToSaved(location) {
-        const trimmedLocation = location.trim();
-        if (trimmedLocation && !savedLocations.has(trimmedLocation)) {
-            savedLocations.add(trimmedLocation);
-            saveLocations();
-        }
-    }
-
-    function showSuggestions(inputElement) {
-        const searchTerm = inputElement.value.trim().toLowerCase();
-        const parentTd = inputElement.closest('td');
-        let suggestionBox = parentTd.querySelector('.suggestions');
-
-        if (!suggestionBox) {
-            suggestionBox
+        const stored = localStorage
