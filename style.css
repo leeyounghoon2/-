@@ -387,3 +387,73 @@ tfoot .total-row td {
         color: transparent;
     }
 }
+
+
+/* ================================================= */
+/* 이미지 캡처 모드에서만 적용될 스타일 - 추가된 부분 */
+body.capture-mode {
+    background-color: #ffffff !important;
+}
+
+body.capture-mode .quotation-container {
+    padding: 20px;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+body.capture-mode h1 {
+    font-size: 2em !important;
+}
+
+body.capture-mode .customer-info table {
+    font-size: 0.9em !important;
+}
+
+body.capture-mode .customer-info th,
+body.capture-mode .customer-info td {
+    white-space: normal !important;
+    word-break: break-all !important;
+}
+
+body.capture-mode .customer-info input[type="date"],
+body.capture-mode .customer-info input[type="text"] {
+    width: 100% !important;
+    padding: 5px !important;
+    font-size: 0.85em !important;
+}
+
+body.capture-mode table {
+    font-size: 0.85em !important;
+    min-width: 700px !important;
+}
+
+body.capture-mode th, body.capture-mode td {
+    padding: 5px !important;
+    white-space: normal !important;
+    word-break: break-all !important;
+}
+
+body.capture-mode input[type="text"],
+body.capture-mode input[type="number"] {
+    font-size: 0.8em !important;
+    width: 100% !important;
+    padding: 3px !important;
+}
+
+body.capture-mode input[type="checkbox"] {
+    transform: scale(1) !important;
+}
+
+body.capture-mode .action-buttons,
+body.capture-mode .completion-button-container {
+    display: none !important;
+}
+
+body.capture-mode input::placeholder {
+    color: transparent;
+}
+
+body.capture-mode .suggestions {
+    display: none !important;
+}
