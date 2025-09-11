@@ -291,8 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
-        const originalOverflowX = quotationContainer.style.overflowX;
-        const originalMinWidth = quotationContainer.style.minWidth;
+        
+        // 캡처를 위해 임시로 'capture-mode' 클래스를 추가합니다.
+        document.body.classList.add('capture-mode');
 
         const captureWidth = quotationContainer.offsetWidth;
         const scale = 3;
@@ -330,6 +331,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }).catch(error => {
             console.error('이미지 저장 중 오류 발생:', error);
             alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
+        }).finally(() => {
+            // 캡처가 끝나면 'capture-mode' 클래스를 바로 제거합니다.
+            document.body.classList.remove('capture-mode');
         });
     });
 
