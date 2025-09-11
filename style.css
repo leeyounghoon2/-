@@ -101,8 +101,8 @@ body {
 
 .quotation-table input {
     width: 100%;
-    border: none;
-    background: transparent;
+    border: 1px solid #ddd;
+    background: #fff;
     padding: 4px;
     box-sizing: border-box;
     text-align: center;
@@ -195,33 +195,4 @@ body {
 
 .suggestion-item:hover {
     background-color: #f0f0f0;
-}
-
-/* ===========================================
-   이미지 저장 모드 (캡처 시) 스타일
-   =========================================== */
-body.capture-mode .quotation-table input {
-    border: none;
-    background-color: transparent;
-    padding: 0;
-    text-align: center;
-    /* 글자가 칸을 벗어나지 않도록 추가 */
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-body.capture-mode .quotation-table input.location-input {
-    text-align: left;
-}
-
-body.capture-mode .quotation-table input.remarks-input {
-    text-align: left;
-}
-
-body.capture-mode .quotation-table input[type="checkbox"] {
-    display: none;
-}
-
-body.capture-mode .button-group {
-    display: none;
 }
