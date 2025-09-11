@@ -11,7 +11,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     overflow-x: auto;
 }
@@ -36,7 +36,7 @@ h1 {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .customer-info th {
@@ -103,4 +103,376 @@ table {
     min-width: 900px;
 }
 
-th,
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    position: relative;
+    white-space: normal;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #555;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* 개별 열 너비 조정 (PC) */
+th:nth-child(1),
+td:nth-child(1) {
+    width: 5%;
+    min-width: 40px;
+}
+th:nth-child(2), /* 시공위치 */
+td:nth-child(2) {
+    width: 12%;
+    min-width: 90px;
+}
+th:nth-child(3), /* 사이즈(가로) */
+td:nth-child(3) {
+    width: 8%;
+    min-width: 60px;
+}
+th:nth-child(4), /* 사이즈(세로) */
+td:nth-child(4) {
+    width: 8%;
+    min-width: 60px;
+}
+th:nth-child(5), /* 추가옵션 */
+td:nth-child(5) {
+    width: 8%;
+    min-width: 70px;
+}
+th:nth-child(6), /* 최종금액 */
+td:nth-child(6) {
+    width: 15%;
+    min-width: 120px;
+}
+th:nth-child(7), /* 비고 */
+td:nth-child(7) {
+    width: 20%;
+    min-width: 160px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: calc(100% - 16px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: normal;
+}
+
+input.remarks-input {
+    width: calc(100% - 16px);
+    min-width: 80px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin: 0;
+    vertical-align: middle;
+}
+
+tfoot .total-row {
+    font-weight: bold;
+    background-color: #e0f2f7;
+}
+
+tfoot .total-row td {
+    border-top: 2px solid #aaa;
+}
+
+/* 총 합계 셀 너비 조정 */
+#totalFinalAmount {
+    width: 15%;
+    min-width: 120px;
+}
+
+/* 자동 완성 제안 목록 스타일 */
+.suggestions {
+    position: absolute;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 100;
+    width: calc(100% - 2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    top: 100%;
+}
+
+.suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* 완료 버튼 스타일 */
+.completion-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#completeBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#completeBtn:hover {
+    background-color: #0056b3;
+}
+
+
+/* ================================================= */
+/* 스마트폰 화면을 위한 반응형 CSS */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .quotation-container {
+        padding: 10px;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-width: unset;
+    }
+
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+
+    .customer-info table {
+        display: block;
+        width: 100%;
+    }
+
+    .customer-info tr {
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
+    }
+
+    .customer-info th,
+    .customer-info td {
+        border: none;
+        width: 50%;
+        box-sizing: border-box;
+        padding: 5px;
+        white-space: normal;
+    }
+
+    .customer-info th:first-child,
+    .customer-info td:nth-child(odd) {
+        width: 35%;
+        text-align: left;
+    }
+
+    .customer-info td:nth-child(even),
+    .customer-info tr:last-child td {
+        width: 65%;
+        text-align: left;
+    }
+
+    .customer-info input[type="date"],
+    .customer-info input[type="text"] {
+        width: calc(100% - 10px);
+        font-size: 0.85em;
+        padding: 5px;
+    }
+
+    .action-buttons {
+        text-align: center;
+    }
+
+    .action-buttons button {
+        padding: 6px 12px;
+        font-size: 1em;
+        margin: 0 3px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 650px;
+        font-size: 0.8em;
+    }
+
+    th, td {
+        padding: 5px 3px;
+        min-width: 60px;
+        white-space: nowrap;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+        min-width: 40px;
+    }
+    th:nth-child(2),
+    td:nth-child(2) {
+        min-width: 100px;
+    }
+    th:nth-child(3),
+    td:nth-child(3) {
+        min-width: 80px;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+        min-width: 80px;
+    }
+    th:nth-child(5),
+    td:nth-child(5) {
+        min-width: 50px;
+    }
+    th:nth-child(6),
+    td:nth-child(6) {
+        min-width: 100px;
+    }
+    th:nth-child(7),
+    td:nth-child(7) {
+        min-width: 120px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 90%;
+        padding: 4px;
+        font-size: 0.85em;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.4);
+    }
+
+    tfoot .total-row td {
+        font-size: 0.9em;
+    }
+
+    .suggestions {
+        width: calc(100% - 2px);
+    }
+
+    .completion-button-container #completeBtn {
+        padding: 10px 20px;
+        font-size: 1.1em;
+    }
+
+    body.capture-mode input::placeholder {
+        color: transparent;
+    }
+}
+
+
+/* ================================================= */
+/* 이미지 캡처 모드에서만 적용될 스타일 (PC 및 모바일 공통) */
+body.capture-mode {
+    background-color: #ffffff !important;
+}
+
+body.capture-mode .quotation-container {
+    padding: 20px;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    min-width: 1100px !important;
+    overflow-x: hidden !important;
+    padding-bottom: 50px !important;
+}
+
+body.capture-mode h1 {
+    font-size: 2em !important;
+}
+
+body.capture-mode .customer-info table {
+    font-size: 0.9em !important;
+}
+
+/* 고객 정보 테이블 글자 줄바꿈 방지 */
+body.capture-mode .customer-info th,
+body.capture-mode .customer-info td {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+}
+
+body.capture-mode .customer-info input[type="date"],
+body.capture-mode .customer-info input[type="text"] {
+    width: 100% !important;
+    padding: 5px !important;
+    font-size: 0.85em !important;
+    text-align: center !important;
+}
+
+body.capture-mode table {
+    font-size: 0.85em !important;
+    min-width: 1000px !important;
+}
+
+body.capture-mode th, body.capture-mode td {
+    padding: 5px !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    text-align: center !important;
+}
+
+/* 추가 옵션과 최종 금액 열의 너비를 캡처 시 고정 (글자 잘림 방지) */
+body.capture-mode th:nth-child(5),
+body.capture-mode td:nth-child(5) {
+    min-width: 80px !important;
+    width: 80px !important;
+}
+body.capture-mode th:nth-child(6),
+body.capture-mode td:nth-child(6) {
+    min-width: 120px !important;
+    width: 120px !important;
+}
+body.capture-mode th:nth-child(7), /* 비고 */
+body.capture-mode td:nth-child(7) {
+    min-width: 180px !important;
+    width: 180px !important;
+}
+
+body.capture-mode input[type="text"],
+body.capture-mode input[type="number"] {
+    font-size: 0.8em !important;
+    width: 100% !important;
+    padding: 3px !important;
+    text-align: center !important;
+}
+
+body.capture-mode input[type="checkbox"] {
+    transform: scale(1) !important;
+}
+
+body.capture-mode .action-buttons,
+body.capture-mode .completion-button-container {
+    display: none !important;
+}
+
+body.capture-mode input::placeholder {
+    color: transparent;
+}
+
+body.capture-mode .suggestions {
+    display: none !important;
+}
