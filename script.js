@@ -164,14 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
 
-            // 체크박스가 선택되었고, 가로 사이즈가 1000 이상이고, 세로 사이즈가 0보다 클 경우에만 계산합니다.
             if (checkItem.checked && width >= 1000 && height > 0) {
-                // 기본 금액은 세로 사이즈를 기준으로 하고, 가로 사이즈에 따라 배수를 곱합니다.
                 const basePrice = (height / 1000) * 25000;
                 const widthMultiplier = width / 1000;
                 baseAmount = basePrice * widthMultiplier;
             } else {
-                // 이 외의 모든 경우는 금액을 0으로 설정합니다.
                 baseAmount = 0;
             }
 
@@ -290,13 +287,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===========================================
-    // 완료 버튼 (JPG 저장) 기능 강화
+    // 완료 버튼 (JPG 저장) 기능 강화 - 수정된 부분
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
         const originalOverflowX = quotationContainer.style.overflowX;
+        const originalMinWidth = quotationContainer.style.minWidth; // 원래 min-width 값 저장
 
+        // 캡처 전에 임시로 CSS 조정
         document.body.classList.add('capture-mode');
+        quotationContainer.style.minWidth = '800px'; // 캡처 시 최소 너비 확장
+        quotationContainer.style.overflowX = 'visible';
 
         const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
         customerInputs.forEach(input => {
@@ -306,10 +307,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        quotationContainer.style.overflowX = 'visible';
+        const captureWidth = quotationContainer.offsetWidth;
+        const scale = 3;
 
         html2canvas(quotationContainer, {
-            scale: 2,
+            scale: scale,
+            width: captureWidth,
+            height: quotationContainer.offsetHeight,
             scrollY: -window.scrollY,
             useCORS: true,
             logging: true,
@@ -339,8 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('이미지 저장 중 오류 발생:', error);
             alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
         }).finally(() => {
+            // 캡처 후 원래 CSS 상태로 복원
             document.body.classList.remove('capture-mode');
             quotationContainer.style.overflowX = originalOverflowX;
+            quotationContainer.style.minWidth = originalMinWidth;
 
             customerInputs.forEach(input => {
                 const originalPlaceholder = input.getAttribute('data-placeholder-text');
