@@ -205,7 +205,7 @@ body.capture-mode .quotation-table input {
     background-color: transparent;
     padding: 0;
     text-align: center;
-    /* 이 부분을 추가하여 글자가 칸을 벗어나지 않게 합니다. */
+    /* 글자가 칸을 벗어나지 않도록 추가 */
     overflow: hidden;
     white-space: nowrap;
 }
