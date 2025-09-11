@@ -124,7 +124,6 @@ body {
     font-weight: bold;
     color: #333;
     padding-right: 12px;
-    padding-top: 10px;
     border-top: 2px solid #333;
 }
 
@@ -206,6 +205,9 @@ body.capture-mode .quotation-table input {
     background-color: transparent;
     padding: 0;
     text-align: center;
+    /* 이 부분을 추가하여 글자가 칸을 벗어나지 않게 합니다. */
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 body.capture-mode .quotation-table input.location-input {
