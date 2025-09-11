@@ -196,3 +196,15 @@ body {
 .suggestion-item:hover {
     background-color: #f0f0f0;
 }
+
+/* ===========================================
+   이미지 저장 시 입력란 스타일 (임시 적용)
+   =========================================== */
+body.capture-mode input {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+body.capture-mode input[type="checkbox"] {
+    display: none;
+}
