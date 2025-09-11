@@ -177,8 +177,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (checkItem.checked && height > 0) {
                 if (width > 1000) {
+                    // 가로 사이즈가 1000을 초과할 경우
+                    // (세로 / 1000) * (가로 / 1000) * 25000 으로 계산
                     baseAmount = (height / 1000) * (width / 1000) * pricePerMeter;
-                } else if (width >= 100) { // 100~1000일 경우
+                } else if (width >= 100) { // 가로 100 이상 1000 이하일 경우
+                    // (세로 / 1000) * 25000 으로 계산
                     baseAmount = (height / 1000) * pricePerMeter;
                 } else {
                     // 가로 100 미만은 금액 계산하지 않음
@@ -307,57 +310,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
-        
-        document.body.classList.add('capture-mode');
+        const inputsToConvert = [];
 
-        const captureWidth = quotationContainer.offsetWidth;
-        const scale = 3;
+        // 모든 input 필드를 찾아서 변환 준비
+        document.querySelectorAll('input').forEach(input => {
+            if (input.type !== 'checkbox') {
+                const span = document.createElement('span');
+                span.textContent = input.value;
+                span.className = input.className + ' temp-span-for-capture'; // 원본 클래스 유지 및 임시 클래스 추가
+                span.style.cssText = window.getComputedStyle(input).cssText; // 스타일 복사
+                span.style.width = input.offsetWidth + 'px'; // 너비 유지
+                span.style.height = input.offsetHeight + 'px'; // 높이 유지
+                span.style.display = 'inline-block'; // 블록 요소처럼 보이게
 
-        html2canvas(quotationContainer, {
-            scale: scale,
-            width: captureWidth,
-            height: quotationContainer.offsetHeight,
-            scrollY: -window.scrollY,
-            useCORS: true,
-            logging: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            foreignObjectRendering: true
-        }).then(canvas => {
-            const image = canvas.toDataURL('image/jpeg', 0.9);
-
-            const link = document.createElement('a');
-            link.href = image;
-
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const filename = `견적서_${year}${month}${day}_${hours}${minutes}.jpg`;
-            link.download = filename;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            alert('견적서가 JPG 이미지로 저장되었습니다!');
-        }).catch(error => {
-            console.error('이미지 저장 중 오류 발생:', error);
-            alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
-        }).finally(() => {
-            document.body.classList.remove('capture-mode');
-        });
-    });
-
-    // ===========================================
-    // 초기 설정 (페이지 로드 시)
-    // ===========================================
-    loadSavedLocations();
-
-    const initialRows = quotationBody.querySelectorAll('.quotation-row');
-    initialRows.forEach(setupRow);
-
-    updateLocationNumbering();
-});
+                // 중요한 스타일 강제 적용
