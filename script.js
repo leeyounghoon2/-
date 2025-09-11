@@ -6,17 +6,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const completeBtn = document.getElementById('completeBtn');
 
     // ===========================================
-    // 고객 연락처 자동 하이픈 추가 기능
+    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
     // ===========================================
     const customerContactInput = document.querySelector('.customer-contact');
 
     if (customerContactInput) {
         customerContactInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
+            let value = e.target.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
             let formattedValue = '';
 
             if (value.length > 11) {
-                value = value.substring(0, 11);
+                value = value.substring(0, 11); // 11자리 초과하면 잘라냄
             }
 
             if (value.length < 4) {
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 자동 완성 (Autocomplete) 관련 변수 및 함수
+    // (이전 코드와 동일)
     // ===========================================
     let savedLocations = new Set();
     const LOCAL_STORAGE_KEY = 'saved_quotation_locations';
@@ -39,21 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadSavedLocations() {
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (stored) {
-            try {
-                savedLocations = new Set(JSON.parse(stored));
-            } catch (e) {
-                console.error("Failed to parse saved locations from localStorage.", e);
-                savedLocations = new Set();
-            }
+            savedLocations = new Set(JSON.parse(stored));
         }
     }
 
     function saveLocations() {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(savedLocations)));
-        } catch (e) {
-            console.error("Failed to save locations to localStorage.", e);
-        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(savedLocations)));
     }
 
     function addLocationToSaved(location) {
@@ -113,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 시공위치 자동 번호 매기기
+    // (이전 코드와 동일)
     // ===========================================
     function updateLocationNumbering() {
         const locationInputs = quotationBody.querySelectorAll('.location-input');
@@ -172,31 +165,28 @@ document.addEventListener('DOMContentLoaded', function() {
             let baseAmount = 0;
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
-            const pricePerMeter = 25000;
-            const optionPrice = 15000;
 
-            if (checkItem.checked && height > 0) {
+            if (checkItem.checked && (width > 0 || height > 0)) {
+                // 기본 금액 계산: 세로 사이즈 * 25
+                let basePrice = height * 25;
+
+                // 가로 사이즈에 따른 배율 계산
+                let multiplier = 1;
                 if (width > 1000) {
-                    // 가로 사이즈가 1000을 초과할 경우
-                    // (세로 / 1000) * (가로 / 1000) * 25000 으로 계산
-                    baseAmount = (height / 1000) * (width / 1000) * pricePerMeter;
-                } else if (width >= 100) { // 가로 100 이상 1000 이하일 경우
-                    // (세로 / 1000) * 25000 으로 계산
-                    baseAmount = (height / 1000) * pricePerMeter;
-                } else {
-                    // 가로 100 미만은 금액 계산하지 않음
-                    baseAmount = 0;
+                    multiplier = width / 1000;
                 }
+
+                baseAmount = basePrice * multiplier;
             } else {
                 baseAmount = 0;
             }
-
+            
             let finalAmount = baseAmount;
             if (optionCheckbox.checked) {
-                finalAmount += optionPrice;
+                finalAmount += 15000;
             }
-            
-            finalAmountCell.textContent = Math.round(finalAmount).toLocaleString('ko-KR') + '원';
+            finalAmountCell.textContent = finalAmount.toLocaleString('ko-KR') + '원';
+
             updateTotalSum();
         }
 
@@ -239,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 총 합계 계산 및 업데이트 함수
+    // (이전 코드와 동일)
     // ===========================================
     function updateTotalSum() {
         let totalSum = 0;
@@ -255,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===========================================
     // 행 추가/제거 기능
+    // (이전 코드와 동일)
     // ===========================================
     addRowBtn.addEventListener('click', function() {
         const newRow = document.createElement('tr');
@@ -306,48 +298,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===========================================
-    // 완료 버튼 (JPG 저장) 기능
+    // 완료 버튼 (JPG 저장) 기능 강화
+    // (이전 코드와 동일)
     // ===========================================
     completeBtn.addEventListener('click', function() {
         const quotationContainer = document.querySelector('.quotation-container');
-        const inputsToConvert = [];
-
-        // 모든 input 필드를 찾아 P 태그로 변환
-        document.querySelectorAll('input').forEach(input => {
-            if (input.type !== 'checkbox') {
-                const p = document.createElement('p');
-                p.textContent = input.value;
-                p.className = 'temp-p-for-capture'; 
-                p.style.cssText = window.getComputedStyle(input).cssText; 
-                p.style.width = input.offsetWidth + 'px'; 
-                p.style.height = input.offsetHeight + 'px'; 
-                p.style.display = 'inline-block'; 
-                p.style.boxSizing = 'border-box';
-                p.style.padding = '4px';
-                p.style.border = '1px solid #ddd';
-
-                input.parentNode.replaceChild(p, input);
-                inputsToConvert.push({original: input, converted: p});
-            }
-        });
+        const originalOverflowX = quotationContainer.style.overflowX;
 
         document.body.classList.add('capture-mode');
 
-        const captureWidth = quotationContainer.offsetWidth;
-        const scale = 3;
+        const customerInputs = document.querySelectorAll('.customer-info input[type="text"], .customer-info input[type="date"]');
+        customerInputs.forEach(input => {
+            if (input.value.trim() === '') {
+                input.setAttribute('data-placeholder-text', input.placeholder || '');
+                input.placeholder = '';
+            }
+        });
+
+        quotationContainer.style.overflowX = 'visible';
 
         html2canvas(quotationContainer, {
-            scale: scale,
-            width: captureWidth,
-            height: quotationContainer.offsetHeight,
+            scale: 2,
             scrollY: -window.scrollY,
             useCORS: true,
             logging: true,
             allowTaint: true,
-            backgroundColor: '#ffffff',
-            foreignObjectRendering: true
+            backgroundColor: '#ffffff'
         }).then(canvas => {
             const image = canvas.toDataURL('image/jpeg', 0.9);
+
             const link = document.createElement('a');
             link.href = image;
 
@@ -369,18 +348,22 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('이미지 저장 중 오류 발생:', error);
             alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
         }).finally(() => {
-            // 변환된 P 태그를 원래 input 필드로 되돌리기
-            inputsToConvert.forEach(item => {
-                if(item.converted.parentNode) {
-                    item.converted.parentNode.replaceChild(item.original, item.converted);
+            document.body.classList.remove('capture-mode');
+            quotationContainer.style.overflowX = originalOverflowX;
+
+            customerInputs.forEach(input => {
+                const originalPlaceholder = input.getAttribute('data-placeholder-text');
+                if (originalPlaceholder !== null) {
+                    input.placeholder = originalPlaceholder;
+                    input.removeAttribute('data-placeholder-text');
                 }
             });
-            document.body.classList.remove('capture-mode');
         });
     });
 
     // ===========================================
     // 초기 설정 (페이지 로드 시)
+    // (이전 코드와 동일)
     // ===========================================
     loadSavedLocations();
 
