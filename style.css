@@ -36,7 +36,6 @@ h1 {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-    /* 일반 화면에서는 줄바꿈 허용 */
     white-space: normal;
 }
 
@@ -109,7 +108,6 @@ th, td {
     padding: 8px;
     text-align: center;
     position: relative;
-    /* 일반 화면에서는 줄바꿈 허용 */
     white-space: normal;
 }
 
@@ -117,7 +115,6 @@ th {
     background-color: #f2f2f2;
     color: #555;
     font-weight: bold;
-    /* 제목은 줄바꿈 안함 */
     white-space: nowrap;
 }
 
@@ -130,96 +127,4 @@ td:nth-child(1) {
 th:nth-child(2), /* 시공위치 */
 td:nth-child(2) {
     width: 12%;
-    min-width: 90px;
-}
-th:nth-child(3), /* 사이즈(가로) */
-td:nth-child(3) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(4), /* 사이즈(세로) */
-td:nth-child(4) {
-    width: 8%;
-    min-width: 60px;
-}
-th:nth-child(5), /* 추가옵션 */
-td:nth-child(5) {
-    width: 8%;
-    min-width: 70px;
-}
-th:nth-child(6), /* 최종금액 */
-td:nth-child(6) {
-    width: 15%;
-    min-width: 120px;
-}
-th:nth-child(7), /* 비고 */
-td:nth-child(7) {
-    width: 20%;
-    min-width: 160px;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: calc(100% - 16px);
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    text-align: center;
-    white-space: normal;
-}
-
-input.remarks-input {
-    width: calc(100% - 16px);
-    min-width: 80px;
-}
-
-input[type="checkbox"] {
-    transform: scale(1.2);
-    margin: 0;
-    vertical-align: middle;
-}
-
-tfoot .total-row {
-    font-weight: bold;
-    background-color: #e0f2f7;
-}
-
-tfoot .total-row td {
-    border-top: 2px solid #aaa;
-}
-
-/* 총 합계 셀 너비 조정 */
-#totalFinalAmount {
-    width: 15%;
-    min-width: 120px;
-}
-
-/* 자동 완성 제안 목록 스타일 */
-.suggestions {
-    position: absolute;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 100;
-    width: calc(100% - 2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: none;
-    left: 0;
-    top: 100%;
-}
-
-.suggestion-item {
-    padding: 8px;
-    cursor: pointer;
-    text-align: left;
-}
-
-.suggestion-item:hover {
-    background-color: #f0f0f0;
-}
-
-/* 완료 버튼 스타일 */
-.completion-button-container {
-    text-align: center;
+    min-width
