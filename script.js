@@ -294,9 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalOverflowX = quotationContainer.style.overflowX;
         const originalMinWidth = quotationContainer.style.minWidth;
 
-        // 저장 시, 평상시 화면을 그대로 캡처합니다.
-        // 별도의 캡처 모드 CSS 클래스를 추가하지 않습니다.
-        
         const captureWidth = quotationContainer.offsetWidth;
         const scale = 3;
 
@@ -309,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
             logging: true,
             allowTaint: true,
             backgroundColor: '#ffffff',
-            foreignObjectRendering: true // 글자 깨짐 방지
+            foreignObjectRendering: true
         }).then(canvas => {
             const image = canvas.toDataURL('image/jpeg', 0.9);
 
