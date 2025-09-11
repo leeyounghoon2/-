@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const completeBtn = document.getElementById('completeBtn');
 
     // ===========================================
-    // 고객 연락처 자동 하이픈 추가 기능 (추가된 부분)
+    // 고객 연락처 자동 하이픈 추가 기능
     // ===========================================
     const customerContactInput = document.querySelector('.customer-contact');
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function updateFinalAmount() {
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
-            const pricePerSqCm = 25000 / 300 / 300; // 30만원 / 90000cm^2
+            const pricePerSqCm = 25000 / 300 / 300;
             let finalAmount = width * height * pricePerSqCm;
             
             if (optionCheckbox.checked) {
@@ -56,47 +56,120 @@ document.addEventListener('DOMContentLoaded', function() {
         widthInput.addEventListener('input', updateFinalAmount);
         heightInput.addEventListener('input', updateFinalAmount);
         optionCheckbox.addEventListener('change', updateFinalAmount);
+    }
 
-        // 자동 완성 기능 (추가된 부분)
-        const locationInput = row.querySelector('.location-input');
-        const suggestionsContainer = row.querySelector('.suggestions');
+    function calculateTotalAmount() {
+        const rows = quotationBody.querySelectorAll('.quotation-row');
+        let total = 0;
+        rows.forEach(row => {
+            const finalAmountCell = row.querySelector('.final-amount-cell');
+            if (finalAmountCell) {
+                const amountText = finalAmountCell.textContent;
+                const amount = parseInt(amountText.replace(/[^0-9]/g, '')) || 0;
+                total += amount;
+            }
+        });
+        totalFinalAmountCell.textContent = total.toLocaleString() + '원';
+    }
 
-        locationInput.addEventListener('input', function() {
-            const query = this.value;
-            if (query.length > 0) {
-                const savedLocations = getSavedLocations();
-                const filteredSuggestions = savedLocations.filter(loc => loc.includes(query));
-                renderSuggestions(suggestionsContainer, filteredSuggestions, this);
-            } else {
-                suggestionsContainer.innerHTML = '';
-                suggestionsContainer.style.display = 'none';
+    function addRow() {
+        const newRow = document.createElement('tr');
+        newRow.classList.add('quotation-row');
+        newRow.innerHTML = `
+            <td><input type="checkbox" class="check-item"></td>
+            <td><input type="text" class="location-input"></td>
+            <td><input type="number" class="width-input" step="100"></td>
+            <td><input type="number" class="height-input" step="100"></td>
+            <td><input type="checkbox" class="option-checkbox"></td>
+            <td class="final-amount-cell"></td>
+            <td><input type="text" class="remarks-input"></td>
+        `;
+        quotationBody.appendChild(newRow);
+        setupRow(newRow);
+    }
+
+    function removeRow() {
+        const checkedItems = quotationBody.querySelectorAll('.check-item:checked');
+        if (checkedItems.length > 0) {
+            checkedItems.forEach(item => {
+                item.closest('.quotation-row').remove();
+            });
+            calculateTotalAmount();
+        } else {
+            alert('삭제할 항목을 선택해주세요.');
+        }
+    }
+
+    addRowBtn.addEventListener('click', addRow);
+    removeRowBtn.addEventListener('click', removeRow);
+
+    // ===========================================
+    // 이미지 저장 기능 (핵심 수정 부분)
+    // ===========================================
+    completeBtn.addEventListener('click', function() {
+        const customerInputs = document.querySelectorAll('.customer-info input[type="text"]');
+        
+        // 캡처 전에 input의 placeholder 텍스트를 data- 속성에 임시 저장
+        customerInputs.forEach(input => {
+            if (input.placeholder) {
+                input.setAttribute('data-placeholder-text', input.placeholder);
+                input.placeholder = ''; // placeholder 숨기기
             }
         });
 
-        locationInput.addEventListener('focus', function() {
-            const query = this.value;
-            if (query.length > 0) {
-                const savedLocations = getSavedLocations();
-                const filteredSuggestions = savedLocations.filter(loc => loc.includes(query));
-                renderSuggestions(suggestionsContainer, filteredSuggestions, this);
-            }
-        });
+        const quotationContainer = document.querySelector('.quotation-container');
+        const originalOverflowX = quotationContainer.style.overflowX;
 
-        locationInput.addEventListener('blur', function(e) {
-            // setTimeout으로 클릭 이벤트가 먼저 실행되도록 지연
-            setTimeout(() => {
-                if (!e.relatedTarget || !e.relatedTarget.classList.contains('suggestion-item')) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
+        // 캡처 모드 클래스 추가
+        document.body.classList.add('capture-mode');
+        quotationContainer.style.overflowX = 'visible';
+
+        // 이미지 품질 향상을 위한 html2canvas 옵션 설정
+        const options = {
+            scale: 2, // 렌더링 해상도를 2배로 높여서 글자 깨짐 현상 방지
+            useCORS: true,
+            logging: true,
+        };
+
+        html2canvas(document.body, options).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/jpeg', 1.0);
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const filename = `견적서_${year}${month}${day}_${hours}${minutes}.jpg`;
+            link.download = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('견적서가 JPG 이미지로 저장되었습니다!');
+        }).catch(error => {
+            console.error('이미지 저장 중 오류 발생:', error);
+            alert('이미지 저장 중 오류가 발생했습니다. 개발자 도구 콘솔을 확인해주세요.');
+        }).finally(() => {
+            document.body.classList.remove('capture-mode');
+            quotationContainer.style.overflowX = originalOverflowX;
+
+            // 캡처 후 원래 placeholder 텍스트 복원
+            customerInputs.forEach(input => {
+                const originalPlaceholder = input.getAttribute('data-placeholder-text');
+                if (originalPlaceholder !== null) {
+                    input.placeholder = originalPlaceholder;
+                    input.removeAttribute('data-placeholder-text');
                 }
-            }, 100);
+            });
         });
+    });
 
-        function renderSuggestions(container, suggestions, input) {
-            container.innerHTML = '';
-            if (suggestions.length > 0) {
-                suggestions.forEach(suggestion => {
-                    const div = document.createElement('div');
-                    div.classList.add('suggestion-item');
-                    div.textContent = suggestion;
-                    div.addEventListener('click', ()
+    // ===========================================
+    // 초기 설정 (페이지 로드 시)
+    // ===========================================
+    const initialRows = quotationBody.querySelectorAll('.quotation-row');
+    initialRows.forEach(setupRow);
+});
