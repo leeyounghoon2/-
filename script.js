@@ -167,8 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const height = parseFloat(heightInput.value) || 0;
 
             if (checkItem.checked && (width > 0 || height > 0)) {
-                // 기본 금액 계산: 세로 사이즈 * 25
-                let basePrice = height * 25;
+                // 기본 금액 계산: 세로 사이즈 * 28
+                let basePrice = height * 28;
 
                 // 가로 사이즈에 따른 배율 계산
                 let multiplier = 1;
@@ -372,3 +372,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateLocationNumbering();
 });
+
