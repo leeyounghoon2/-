@@ -165,31 +165,51 @@ document.addEventListener('DOMContentLoaded', function() {
             let baseAmount = 0;
             const width = parseFloat(widthInput.value) || 0;
             const height = parseFloat(heightInput.value) || 0;
-
-            if (checkItem.checked && (width > 0 || height > 0)) {
-                // 기본 금액 계산: 세로 사이즈 * 28
-                let basePrice = height * 28;
-
-                // 가로 사이즈에 따른 배율 계산
-                let multiplier = 1;
+            const pricePerMeter = 28000;
+            const optionPrice = 15000;
+            
+            // -----------------------------------------------------------
+            // 📌 변경된 세로 계산 로직 
+            // -----------------------------------------------------------
+            let effectiveHeight = height; 
+            
+            if (height >= 100 && height <= 1000) {
+                // 세로 100mm ~ 1000mm 시: 세로 길이를 1000mm로 고정 (28000원 적용)
+                effectiveHeight = 1000; 
+            } else if (height < 100) {
+                // 세로 100mm 미만은 금액 계산하지 않음 (baseAmount = 0)
+                effectiveHeight = 0;
+            }
+            // 1000mm 초과는 기존처럼 실제 height 값 사용
+            
+            if (checkItem.checked && effectiveHeight > 0) {
+                // 세로 기본 단가: effectiveHeight / 1000 * 28000
+                const basePricePerHeight = (effectiveHeight / 1000) * pricePerMeter;
+                
                 if (width > 1000) {
-                    multiplier = width / 1000;
+                    // 가로 1000 초과 시: (세로 기본 단가) * (가로 / 1000)
+                    baseAmount = basePricePerHeight * (width / 1000);
+                } else if (width >= 100) { 
+                    // 가로 100~1000일 경우: 세로 기본 단가만 적용
+                    baseAmount = basePricePerHeight;
+                } else {
+                    // 가로 100 미만은 금액 계산하지 않음
+                    baseAmount = 0;
                 }
-
-                baseAmount = basePrice * multiplier;
             } else {
                 baseAmount = 0;
             }
             
-            let finalAmount = baseAmount;
+            let finalAmount = Math.round(baseAmount); // 최종 금액은 반올림
             if (optionCheckbox.checked) {
-                finalAmount += 15000;
+                finalAmount += optionPrice;
             }
+            
             finalAmountCell.textContent = finalAmount.toLocaleString('ko-KR') + '원';
 
             updateTotalSum();
         }
-
+        // ... (이하 나머지 setupRow 함수 내용은 기존과 동일)
         locationInput.addEventListener('input', function() {
             if (this.value.trim() !== '') {
                 checkItem.checked = true;
@@ -372,4 +392,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateLocationNumbering();
 });
+
 
